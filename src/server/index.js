@@ -39,6 +39,9 @@ io.sockets.on("connection", function(socket) {
     });
   });
 
+  socket.on("d", function(f) {
+    f("hello");
+  });
   //socket for updating user configuration
   socket.on("update-user-config", function(userconfig, callback) {
     updateUserConfig(userconfig, function(res) {

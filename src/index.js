@@ -11,6 +11,9 @@ if (process.env.NODE_ENV === "production") {
   url = `http://localhost:4000`;
 }
 const socket = io.connect(url);
+socket.emit("d", c => {
+  console.log(c);
+});
 ReactDOM.render(<App />, document.getElementById("root"));
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
