@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === "production") {
   url = `http://localhost:4000`;
 }
 
-console.log(process.env.PORT);
+console.log(process.env.PORT_NUMBER, process.env.PORT);
 const socket = io.connect(url);
 console.log(url);
 socket.emit("d", c => {

@@ -10,9 +10,14 @@ const nodemailer = require("nodemailer");
 const moment = require("moment");
 var sendMailFlag = 0; //variable used for sending the mail only once
 
-const port = process.env.PORT || "4000";
+const port = process.env.PORT_NUMBER || "4000";
 server.listen(port, () => {
-  console.log("Listening to port", port, process.env.PORT);
+  console.log(
+    "Listening to port",
+    port,
+    process.env.PORT,
+    process.env.PORT_NUMBER
+  );
 });
 let rclient = null;
 app.use(express.static(path.join(__dirname, "../../build")));
