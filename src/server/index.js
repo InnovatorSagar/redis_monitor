@@ -34,8 +34,8 @@ app.get("/", function(req, res) {
 
 io.sockets.on("connection", function(socket) {
   console.log("Connected");
-  socket.on("hello", () => {
-    console.log("hello");
+  socket.on("hello", function(c) {
+    c("hello");
   });
 });
 // //socket On when user connected to localhost 4000

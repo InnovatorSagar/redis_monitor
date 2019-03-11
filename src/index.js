@@ -5,7 +5,9 @@ import { App } from "./App";
 import * as serviceWorker from "./serviceWorker";
 import io from "socket.io-client";
 const socket = io.connect("https://rdbalert.herokuapp.com:" + process.env.PORT);
-socket.emit("hello");
+socket.emit("hello", c => {
+  console.log(c);
+});
 console.log(socket);
 ReactDOM.render(<App />, document.getElementById("root"));
 
