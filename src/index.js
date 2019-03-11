@@ -5,10 +5,6 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import io from "socket.io-client";
 let url = null;
-
-fetch("https://localhost:4000/port_adress", function(res, err) {
-  console.log(res);
-});
 if (process.env.NODE_ENV === "production") {
   url = "/";
 } else {
