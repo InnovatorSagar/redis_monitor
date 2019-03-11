@@ -1,11 +1,12 @@
-var express = require("express");
-var app = express();
-var server = require("http").createServer(app);
-var io = require("socket.io")(server);
-var redis = require("redis");
-var mongoClient = require("mongodb").MongoClient; //creating mongodb Client
-var url = "mongodb://localhost:27017/RDBAlert"; //url on which the mongodb is giving services
-var nodemailer = require("nodemailer");
+const path = reqiure("path");
+const express = require("express");
+const app = express();
+const server = require("http").createServer(app);
+const io = require("socket.io")(server);
+const redis = require("redis");
+const mongoClient = require("mongodb").MongoClient; //creating mongodb Client
+const url = "mongodb://localhost:27017/RDBAlert"; //url on which the mongodb is giving services
+const nodemailer = require("nodemailer");
 const moment = require("moment");
 var sendMailFlag = 0; //variable used for sending the mail only once
 
