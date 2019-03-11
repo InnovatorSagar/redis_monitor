@@ -1,7 +1,7 @@
 var express = require("express");
 var app = express();
 var server = require("http").createServer(app);
-var io = require("socket.io").listen(server);
+var io = require("socket.io")(server);
 var redis = require("redis");
 var mongoClient = require("mongodb").MongoClient; //creating mongodb Client
 var url = "mongodb://localhost:27017/RDBAlert"; //url on which the mongodb is giving services
@@ -9,7 +9,8 @@ var nodemailer = require("nodemailer");
 const moment = require("moment");
 var sendMailFlag = 0; //variable used for sending the mail only once
 
-server.listen(process.env.PORT || 4000);
+const port = process.env.PORT || 4000;
+server.listen(port);
 
 console.log("server running");
 
@@ -18,7 +19,7 @@ app.use(express.static(path.join(__dirname, "../../build")));
 
 //testing the server on index.html
 app.get("/", function(req, res) {
-  res.sendFile(__dirname + "/index.html");
+  res.sendFile(__dirname + "./index.html");
 });
 
 class Record {
