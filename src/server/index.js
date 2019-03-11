@@ -501,5 +501,3 @@ function getDataBetweenTwoDates(startDate, endDate, callback) {
       });
   });
 }
-
-module.exports = { port };
