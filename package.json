@@ -1,5 +1,5 @@
 {
-  "name": "rdbalert-frontend",
+  "name": "rdbalert",
   "version": "1.0.0",
   "description": "RDBALERT is an Open Source Redis Monitoring system that will help you in taking care of health of your redis along with sending alerts to admin if something goes wrong with redis's health.",
   "main": "index.js",
@@ -18,6 +18,7 @@
     "mongodb": "^3.1.13",
     "nodemailer": "^5.1.1",
     "nodemon": "^1.18.10",
+    "path": "^0.12.7",
     "react": "^16.8.3",
     "react-awesome-modal": "^2.0.5",
     "react-chartjs-2": "^2.7.4",
