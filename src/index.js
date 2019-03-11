@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-import { App } from "./App";
+import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import io from "socket.io-client";
 const socket = io.connect("https://rdbalert.herokuapp.com:" + process.env.PORT);
