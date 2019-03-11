@@ -10,13 +10,16 @@ const nodemailer = require("nodemailer");
 const moment = require("moment");
 var sendMailFlag = 0; //variable used for sending the mail only once
 
-const port = process.env.PORT || 4000;
-server.listen(port);
+const port = process.env.PORT || "4000";
+app.set("port", port);
+server.listen(app.get("port"), () => {
+  console.log("Listening to port", app.get("port"));
+});
 
 console.log("server running");
 
 let rclient = null;
-app.use(express.static(path.join(__dirname, "../../build")));
+app.use(express.static(__dirname + "../../build"));
 
 //testing the server on index.html
 app.get("/", function(req, res) {
@@ -494,3 +497,5 @@ function getDataBetweenTwoDates(startDate, endDate, callback) {
       });
   });
 }
+
+module.exports = { port };

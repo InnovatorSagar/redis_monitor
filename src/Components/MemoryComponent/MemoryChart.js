@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Memory from "./Memory";
 import "../Chart.css";
-import { socket } from "../../App.js";
+import { socket } from "../../index";
 
 class MemoryChart extends Component {
   constructor(props) {

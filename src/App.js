@@ -9,8 +9,7 @@ import ClientChart from "./Components/ClientComponent/ClienChart";
 import MemoryChart from "./Components/MemoryComponent/MemoryChart";
 import DashboardComponent from "./Components/DashboardComponent/DashboardComponent";
 import FormComponent from "./Components/FormComonent/FormComponent";
-import io from "socket.io-client";
-const socket = io();
+
 class App extends Component {
   render() {
     return (
@@ -30,4 +29,4 @@ class App extends Component {
   }
 }
 
-export { App, socket };
+export { App };

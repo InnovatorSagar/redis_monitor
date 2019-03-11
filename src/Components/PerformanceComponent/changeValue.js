@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Performance from "./Performance";
 import { connect } from "react-redux";
 import { fetchNewData, set } from "../../actions/dataActions";
-import { socket } from "../../App.js";
+import { socket } from "../../index";
 
 class ChangeValue extends Component {
   componentDidMount() {

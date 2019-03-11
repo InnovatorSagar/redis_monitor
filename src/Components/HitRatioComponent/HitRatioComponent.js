@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Client from "./HitRatio";
 import "../Chart.css";
-import { socket } from "../../App.js";
+import { socket } from "../../index";
 
 class ClientChart extends Component {
   constructor(props) {

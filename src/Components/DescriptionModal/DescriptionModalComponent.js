@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Modal from "react-awesome-modal";
 import "./DescriptionModalComponent.css";
-import { socket } from "../../App.js";
+import { socket } from "../../index";
 
 class DescriptionModalComponent extends Component {
   constructor(props) {

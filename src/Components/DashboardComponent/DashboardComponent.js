@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import "./DashboardComponent.css";
 import MatrixCardComponent from "../MatrixCardComponent/MatrixCardComponent";
 import HeaderComponent from "../HeaderComponent/HeaderComponent";
-import { socket } from "../../App.js";
+import { socket } from "../../index.js";
 
 class DashboardComponent extends Component {
   componentDidMount() {

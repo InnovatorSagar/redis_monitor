@@ -4,7 +4,7 @@ import logo from "../../assets/logo.png";
 import "./HomeComponent.css";
 import { Redirect } from "react-router-dom";
 import ModalComponent from "../ModalComponent/ModalComponent";
-import { socket } from "../../App.js";
+import { socket } from "../../index";
 
 class HomeComponent extends Component {
   constructor(props) {

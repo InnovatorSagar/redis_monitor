@@ -7,7 +7,7 @@ import MemoryChart from "../MemoryComponent/MemoryChart.js";
 import ClientChart from "../ClientComponent/ClienChart.js";
 import NotificationComponent from "../NotificationComponent/NotificationComponent.js";
 import DescriptionModalComponent from "../DescriptionModal/DescriptionModalComponent.js";
-import { socket } from "../../App.js";
+import { socket } from "../../index";
 class MatrixCardComponent extends Component {
   constructor(props) {
     super(props);

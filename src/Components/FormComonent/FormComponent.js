@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import "./FormComponent.css";
 import HeaderComponent from "../HeaderComponent/HeaderComponent";
 import FormDataConfirmationModal from "../ModalComponent/FormDataConfirmationModal";
-import { socket } from "../../App.js";
+import { socket } from "../../index";
 
 class FormComponent extends Component {
   constructor(props) {
