@@ -122,9 +122,9 @@ mongoClient.connect(url, { useNewUrlParser: true }, function(err, metrices) {
     { expireAfterSeconds: 86400 },
     function(err, res) {
       if (err) throw err;
+      metrices.close();
     }
   );
-  metrices.close();
 });
 
 //creating transporter for mail
