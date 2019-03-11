@@ -12,7 +12,7 @@ var sendMailFlag = 0; //variable used for sending the mail only once
 
 const port = process.env.PORT || "4000";
 server.listen(port, () => {
-  console.log("Listening to port", port);
+  console.log("Listening to port", port, process.env.PORT);
 });
 let rclient = null;
 app.use(express.static(path.join(__dirname, "../../build")));
