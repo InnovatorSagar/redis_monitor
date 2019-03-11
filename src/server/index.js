@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const path = require("path");
 const server = require("http").createServer(app);
 const io = require("socket.io")(server);
 const redis = require("redis");
@@ -18,7 +19,7 @@ server.listen(app.get("port"), () => {
 console.log("server running");
 
 let rclient = null;
-app.use(express.static(__dirname + "../../build"));
+app.use(express.static(path.join(__dirname, "../../build")));
 
 //testing the server on index.html
 app.get("/", function(req, res) {
