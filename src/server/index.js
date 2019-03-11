@@ -10,7 +10,7 @@ const moment = require("moment");
 var sendMailFlag = 0; //variable used for sending the mail only once
 
 const port = process.env.PORT || "4000";
-app.set("port", port, url);
+app.set("port", port);
 server.listen(app.get("port"), () => {
   console.log("Listening to port", app.get("port"));
 });
