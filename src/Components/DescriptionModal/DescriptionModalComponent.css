@@ -1,0 +1,50 @@
+.description-container {
+  display: flex;
+  flex-direction: column;
+}
+.description-container > h1 {
+  font-size: 22px;
+}
+
+.bordered {
+  border-bottom: 1px solid;
+}
+.grid-data {
+  border: 1px solid;
+  overflow-y: scroll;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto;
+}
+.description-container > label {
+  margin-left: 20px;
+  text-align: left;
+  font-size: 18px;
+}
+.description-container > hr {
+  border: 1px solid black;
+  width: 100%;
+  margin-bottom: 20px;
+}
+.description-container > input {
+  height: 30px;
+  width: 120px;
+}
+.proceed-btn {
+  background: black;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  height: 40px;
+  margin-top: 20px;
+  width: 200px;
+}
+.cancel-btn {
+  height: 40px;
+  width: 119px;
+  border: 1px solid #000000;
+  border-radius: 4px;
+  margin-left: 10px;
+  margin-top: 20px;
+  margin-right: 13px;
+}

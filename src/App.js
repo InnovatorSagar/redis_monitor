@@ -1,28 +1,33 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
-
+import React, { Component } from "react";
+import "./App.css";
+import { Provider } from "react-redux";
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import ChangeValue from "./Components/PerformanceComponent/changeValue";
+import store from "./store";
+import HomeComponent from "./Components/HomeComponent/HomeComponent";
+import ClientChart from "./Components/ClientComponent/ClienChart";
+import MemoryChart from "./Components/MemoryComponent/MemoryChart";
+import DashboardComponent from "./Components/DashboardComponent/DashboardComponent";
+import FormComponent from "./Components/FormComonent/FormComponent";
+import io from "socket.io-client";
+const socket = io();
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+      <Provider store={store}>
+        <Router>
+          <div className="App">
+            <Route exact path="/" component={HomeComponent} />
+            <Route exact path="/Memory" component={MemoryChart} />
+            <Route exact path="/Client" component={ClientChart} />
+            <Route exact path="/performance" component={ChangeValue} />
+            <Route exact path="/dashboard" component={DashboardComponent} />
+            <Route exact path="/Configure" component={FormComponent} />
+          </div>
+        </Router>
+      </Provider>
     );
   }
 }
 
-export default App;
+export { App, socket };

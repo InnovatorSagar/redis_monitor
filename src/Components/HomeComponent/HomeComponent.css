@@ -1,0 +1,61 @@
+.app-contain {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.home-image {
+  height: 60%;
+  width: 50%;
+}
+
+.main {
+  display: flex;
+  padding-left: 128px;
+  flex-direction: column;
+  align-self: center;
+}
+
+.signup-login {
+  display: flex;
+  align-self: flex-start;
+  padding-top: 50px;
+}
+
+.main > p {
+  color: grey;
+  text-align: left;
+  margin-top: 4px;
+}
+
+.main > h1 {
+  text-align: left;
+}
+
+.main > h2 {
+  text-align: left;
+  margin-bottom: 0px;
+  padding-top: 10px;
+}
+.main > .logo {
+  width: 15%;
+  height: 50px;
+}
+
+.rdbConfiguration-btn {
+  padding: 9px 50px 9px 50px;
+  border: 1px solid;
+  background: white;
+  border-radius: 3px;
+  text-align: center;
+}
+
+.dashboard-btn {
+  padding: 9px 50px 9px 50px;
+  border: 1px solid white;
+  background: #000000;
+  margin-right: 10px;
+  border-radius: 4px;
+  color: white;
+  text-align: center;
+  margin-left: 10px;
+}

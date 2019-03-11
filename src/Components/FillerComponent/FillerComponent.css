@@ -1,0 +1,7 @@
+.filler {
+    background: red;
+    height: 100%;
+    width: 350px;
+    border-radius: inherit;
+    transition: width .2s ease-in;
+}

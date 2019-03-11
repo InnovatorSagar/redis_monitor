@@ -1,0 +1,47 @@
+.card-container {
+  display: flex;
+  flex-direction: column;
+  /* // box-shadow: 5px 5px 5px 5px #888888; */
+  border-radius: 2px;
+  padding: 5px 15px 15px 15px;
+  margin: 1em;
+  background-color: #ffffff;
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+}
+
+.buttons {
+  display: flex;
+}
+
+.notification {
+  display: flex;
+  margin: 0px 0px 1em 3px;
+  padding: 1px 4px 1px 4px;
+  border: 1px solid;
+  border-radius: 3px;
+  -webkit-align-self: flex-end;
+  align-self: flex-end;
+}
+.notification > p {
+  padding-left: 5px;
+  margin: 0px;
+  text-align: start;
+}
+.notification > img {
+  height: 20px;
+}
+.card-container > hr {
+  border: 1px grey;
+}
+.card-container > graphs {
+  padding: 20px;
+}
+
+.graph {
+  height: 50%;
+  width: 100%;
+}

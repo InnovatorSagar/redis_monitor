@@ -1,0 +1,27 @@
+.notification-container {
+  display: flex;
+  flex-direction: column;
+}
+.notification-container > h1 {
+  font-size: 22px;
+  margin-left: 20px;
+  text-align: left;
+}
+.notification-container > hr {
+  border: 1px solid black;
+  width: 100%;
+}
+.notification-container > p {
+  font-size: 18px;
+  margin-left: 20px;
+  text-align: left;
+}
+.close-btn {
+  height: 36px;
+  width: 56px;
+  border-radius: 4px;
+  background-color: black;
+  text-align: center;
+  align-self: center;
+  color: white;
+}
