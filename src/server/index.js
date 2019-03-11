@@ -27,6 +27,10 @@ app.get("/", function(req, res) {
   res.sendFile(__dirname + "./index.html");
 });
 
+app.get("/port_address", function(req, res) {
+  return res.send(process.env.PORT);
+});
+
 class Record {
   constructor(date, data) {
     this.date = date;
