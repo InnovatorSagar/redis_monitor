@@ -6,7 +6,7 @@ import * as serviceWorker from "./serviceWorker";
 import io from "socket.io-client";
 let url = null;
 if (process.env.NODE_ENV === "production") {
-  url = `https://rdbalert.herokuapp.com:${process.env.PORT_NUMBER}`;
+  url = `https://rdbalert.herokuapp.com:${process.env.PORT}`;
 } else {
   url = `http://localhost:4000`;
 }
