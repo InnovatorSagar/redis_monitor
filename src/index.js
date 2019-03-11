@@ -4,14 +4,15 @@ import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import io from "socket.io-client";
+import { port } from "./server/index";
 let url = null;
 if (process.env.NODE_ENV === "production") {
-  url = `https://rdbalert.herokuapp.com:${process.env.PORT}`;
+  url = `https://rdbalert.herokuapp.com:${port}`;
 } else {
   url = `http://localhost:4000`;
 }
 
-console.log(process.env.PORT_NUMBER, process.env.PORT);
+console.log(port);
 const socket = io.connect(url);
 console.log(url);
 socket.emit("d", c => {
