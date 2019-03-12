@@ -68,18 +68,6 @@ io.sockets.on("connection", function(socket) {
       port: userConfig.port,
       host: userConfig.databaseHost,
       password: userConfig.databasePass
-<<<<<<< HEAD
-    });
-
-    client.on("error", function(err, res) {
-      if (err) {
-        console.log(err);
-        callback(false);
-        client.end(false);
-      }
-    });
-
-=======
     });
 
     client.on("error", function(err, res) {
@@ -90,17 +78,12 @@ io.sockets.on("connection", function(socket) {
       }
     });
 
->>>>>>> 45efafcf841d7b5976e16b23df9ffa50f458c7c4
     client.on("ready", function(err, res) {
       insertIntoUser(userConfig, function(res) {
         if (res) callback(true);
         else callback(false);
       });
-<<<<<<< HEAD
-      client.end(false);
-=======
       client.end();
->>>>>>> 45efafcf841d7b5976e16b23df9ffa50f458c7c4
     });
   });
 
@@ -121,28 +104,19 @@ io.sockets.on("connection", function(socket) {
       if (err) {
         console.log(err);
         callback(false);
-<<<<<<< HEAD
-        client.end(false);
-=======
         client.end();
->>>>>>> 45efafcf841d7b5976e16b23df9ffa50f458c7c4
       }
     });
 
     client.on("ready", function(err, res) {
       updateUserConfig(userConfig, function(res) {
         callback(true);
-<<<<<<< HEAD
-      });
-      client.end(false);
-=======
         data.flags.performanceFlag = 0;
         data.flags.hitRatioFlag = 0;
         data.flags.memoryFlag = 0;
         data.flags.numberOfClientsFlag = 0;
       });
       client.end();
->>>>>>> 45efafcf841d7b5976e16b23df9ffa50f458c7c4
     });
   });
 
@@ -550,21 +524,11 @@ function getinfo(userData, socket) {
       });
     });
 
-<<<<<<< HEAD
-    //socket to emit data on notification
-    if (sendMailFlag === 1 && blink === 2) {
-      blink = 1;
-      console.log("Chal rha hu, jayega ye ", data);
-      socket.emit("get-data-for-blinking-notification", data.flags);
-    }
-
-=======
     //socket for sending data to blink notification
     if (sendMailFlag === 1 && blink === 2) {
       blink = 1;
       socket.emit("get-data-for-blinking-notification", data.flags);
     }
->>>>>>> 45efafcf841d7b5976e16b23df9ffa50f458c7c4
     //socket for sending the real time data to dashboard
     socket.emit("info", data);
   }, 2000);

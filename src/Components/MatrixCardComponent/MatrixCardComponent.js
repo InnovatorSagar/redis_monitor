@@ -19,24 +19,21 @@ class MatrixCardComponent extends Component {
       descriptionModal: false,
       notify: false,
       blink: true,
-<<<<<<< HEAD
       data: null
-=======
-      data: null,
->>>>>>> 45efafcf841d7b5976e16b23df9ffa50f458c7c4
     };
     this.notificationModal = this.notificationModal.bind(this);
     this.descriptionModal = this.descriptionModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
   }
-  
 
-  blinkbutton = (notify) => {
-    if(notify===1) {
-      setTimeout(() => {this.setState({blink: !this.state.blink});},1000);
+  blinkbutton = notify => {
+    if (notify === 1) {
+      setTimeout(() => {
+        this.setState({ blink: !this.state.blink });
+      }, 1000);
     }
     return this.state.blink;
-  }
+  };
 
   blinkbutton = notify => {
     if (notify === 1) {
@@ -82,17 +79,12 @@ class MatrixCardComponent extends Component {
   }
 
   componentWillReceiveProps(props) {
-<<<<<<< HEAD
     this.setState({ notify: props.notify });
   }
-=======
-    this.setState({notify: props.notify});
-}
->>>>>>> 45efafcf841d7b5976e16b23df9ffa50f458c7c4
 
   render() {
     const { heading } = this.props;
-      return (
+    return (
       <div className="card-container">
         {this.state.notificationModal && this.state.data !== null && (
           <NotificationComponent
@@ -117,7 +109,9 @@ class MatrixCardComponent extends Component {
               <img src={description} alt="alert" />
             </div>
             <div className="notification" onClick={this.notificationModal}>
-            {this.blinkbutton(this.state.notify) && <img src={alert_on} alt="alert" />}
+              {this.blinkbutton(this.state.notify) && (
+                <img src={alert_on} alt="alert" />
+              )}
             </div>
           </div>
         </div>
