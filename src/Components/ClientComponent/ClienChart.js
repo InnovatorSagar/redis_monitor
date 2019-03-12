@@ -7,28 +7,20 @@ class ClientChart extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      barChartData: {
+      lineChartData: {
         labels: [],
         datasets: [
           {
-            type: "bar",
+            type: "line",
             label: "Number of Clients of System",
-            backgroundColor: [
-              "orange",
-              "orange",
-              "orange",
-              "orange",
-              "orange",
-              "orange",
-              "orange"
-            ],
+            backgroundColor: "orange",
             borderWidth: "2",
             lineTension: 0.45,
             data: []
           }
         ]
       },
-      barChartOptions: {
+      lineChartOptions: {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
@@ -56,23 +48,23 @@ class ClientChart extends Component {
     socket.on("info", data => {
       this.change(data.metrics.numberOfClient);
       this.setState({ percentage: this.state.memory });
-      const oldDataSet = this.state.barChartData.datasets[0];
+      const oldDataSet = this.state.lineChartData.datasets[0];
       const newDataSet = { ...oldDataSet };
       newDataSet.data.push(this.state.memory);
       if (newDataSet.data.length % 8 === 0) {
         newDataSet.data.shift();
       }
       const newChartData = {
-        ...this.state.barChartData,
+        ...this.state.lineChartData,
         datasets: [newDataSet],
-        labels: this.state.barChartData.labels.concat(
+        labels: this.state.lineChartData.labels.concat(
           new Date().toLocaleTimeString()
         )
       };
       if (newChartData.labels.length % 8 === 0) {
         newChartData.labels.shift();
       }
-      this.setState({ barChartData: newChartData });
+      this.setState({ lineChartData: newChartData });
     });
   }
 
@@ -81,8 +73,8 @@ class ClientChart extends Component {
       <div className="chart_size">
         Number of Clients: {this.state.memory}
         <Client
-          data={this.state.barChartData}
-          options={this.state.barChartOptions}
+          data={this.state.lineChartData}
+          options={this.state.lineChartOptions}
           height={this.state.height}
         />
       </div>

@@ -3,6 +3,8 @@ import Modal from "react-awesome-modal";
 import "./DescriptionModalComponent.css";
 import { socket } from "../../index";
 
+const moment = require("moment");
+
 class DescriptionModalComponent extends Component {
   constructor(props) {
     super(props);
@@ -14,10 +16,29 @@ class DescriptionModalComponent extends Component {
       arrayOfData: []
     };
   }
+
+  setDateLimit = () => {
+    let today = moment();
+    today = today.subtract(1, 'days');
+    today = today.format('YYYY-MM-DD');
+    return today;
+  }
+  validate = () => {
+    let startdatevar = this.state.startingdate;
+    let enddatevar = this.state.endingdate;
+    if(startdatevar === "" || enddatevar === "") {
+      return false;
+    }
+    return true;
+  }
+
   handleChange = event => {
     this.setState({ [event.target.name]: event.target.value });
   };
+
   handleClick = event => {
+    let res= this.validate();
+    if(res) {
     let type = "Performance Data";
     if (this.props.heading === "Performance Matrix") type = 3;
     else if (this.props.heading === "Memory Matrix") type = 1;
@@ -57,11 +78,12 @@ class DescriptionModalComponent extends Component {
         }
       );
     });
-
+  }
     // event.preventDefault();
   };
   render() {
     const { visible, closeModal, heading } = this.props;
+    
     return (
       <section>
         {this.state.dataFromDatabase && this.state.data !== null && (
@@ -76,12 +98,6 @@ class DescriptionModalComponent extends Component {
                   <strong>Matrix Data</strong>
                 </span>
                 {
-                  /* {this.state.data.map(curr_data => {
-                  return (
-                      <span>{curr_data.date}</span>
-                      <span>{curr_data.data}</span>
-                  );
-                })} */
                   this.state.arrayOfData
                 }
               </div>
@@ -104,6 +120,7 @@ class DescriptionModalComponent extends Component {
                   type="date"
                   name="startingdate"
                   value={this.state.startingdate}
+                  max={this.setDateLimit()}
                   onChange={e => this.handleChange(e)}
                 />
               </section>
@@ -113,6 +130,7 @@ class DescriptionModalComponent extends Component {
                   type="date"
                   name="endingdate"
                   value={this.state.endingdate}
+                  max={this.setDateLimit()}
                   onChange={e => this.handleChange(e)}
                 />
               </section>

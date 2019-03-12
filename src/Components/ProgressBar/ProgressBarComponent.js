@@ -5,7 +5,11 @@ import './ProgressBarComponent.css';
 class ProgressBarComponent extends Component {
     render() {
         const { percentage } = this.props;
-        let percent = 460*(percentage/100);
+        let percentag = percentage;
+        if(percentag > 100) {
+            percentag = 100;
+        }
+        let percent = 460*(percentag/100);
         return (
             <div className="progress-bar">
               <Filler percentage={percent} />

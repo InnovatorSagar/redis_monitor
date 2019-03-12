@@ -5,9 +5,11 @@ import alert_on from "../../assets/alert_on.png";
 import description from "../../assets/description.png";
 import MemoryChart from "../MemoryComponent/MemoryChart.js";
 import ClientChart from "../ClientComponent/ClienChart.js";
+import HitRatioChart from "../HitRatioComponent/HitRatioComponent.js";
 import NotificationComponent from "../NotificationComponent/NotificationComponent.js";
 import DescriptionModalComponent from "../DescriptionModal/DescriptionModalComponent.js";
 import { socket } from "../../index";
+
 class MatrixCardComponent extends Component {
   constructor(props) {
     super(props);
@@ -15,12 +17,21 @@ class MatrixCardComponent extends Component {
       component: null,
       notificationModal: false,
       descriptionModal: false,
-      data: null
+      notify: false,
+      blink: true,
+      data: null,
     };
-
     this.notificationModal = this.notificationModal.bind(this);
     this.descriptionModal = this.descriptionModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
+  }
+  
+
+  blinkbutton = (notify) => {
+    if(notify===1) {
+      setTimeout(() => {this.setState({blink: !this.state.blink});},1000);
+    }
+    return this.state.blink;
   }
 
   notificationModal() {
@@ -51,12 +62,19 @@ class MatrixCardComponent extends Component {
   closeModal() {
     this.setState({
       descriptionModal: false,
-      notificationModal: false
+      notificationModal: false,
+      blink: true
     });
+    this.setState({ notify: 0 });
   }
+
+  componentWillReceiveProps(props) {
+    this.setState({notify: props.notify});
+}
+
   render() {
     const { heading } = this.props;
-    return (
+      return (
       <div className="card-container">
         {this.state.notificationModal && this.state.data !== null && (
           <NotificationComponent
@@ -64,6 +82,7 @@ class MatrixCardComponent extends Component {
             heading={heading}
             data={this.state.data}
             closeModal={this.closeModal}
+            changeConf={this.state.notify}
           />
         )}
         {this.state.descriptionModal && (
@@ -78,11 +97,9 @@ class MatrixCardComponent extends Component {
           <div className="buttons">
             <div className="notification" onClick={this.descriptionModal}>
               <img src={description} alt="alert" />
-              <p> 1</p>
             </div>
             <div className="notification" onClick={this.notificationModal}>
-              <img src={alert_on} alt="alert" />
-              <p> 3</p>
+            {this.blinkbutton(this.state.notify) && <img src={alert_on} alt="alert" />}
             </div>
           </div>
         </div>
@@ -97,7 +114,7 @@ class MatrixCardComponent extends Component {
           ) : heading === "Number Of Clients Matrix" ? (
             <ClientChart />
           ) : (
-            <ChangeValue />
+            <HitRatioChart />
           )}
         </div>
       </div>
