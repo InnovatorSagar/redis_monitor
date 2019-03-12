@@ -9,7 +9,23 @@ const mongoClient = require("mongodb").MongoClient; //url on which the mongodb i
 const nodemailer = require("nodemailer");
 const moment = require("moment");
 var sendMailFlag = 0; //variable used for sending the mail only once
-
+let blink = 1;
+var data = {
+  metrics: {
+    performanceData: 0,
+    numberOfClient: 0,
+    maximumMemory: 0,
+    usedMemory: 0,
+    keySpaceHit: 0,
+    keySpaceMiss: 0
+  },
+  flags: {
+    performanceFlag: 0,
+    memoryFlag: 0,
+    numberOfClientsFlag: 0,
+    hitRatioFlag: 0
+  }
+};
 const port = process.env.PORT || "4000";
 server.listen(port, () => {
   console.log(
@@ -40,23 +56,70 @@ class Record {
 
 //socket On when user connected to localhost 4000
 io.sockets.on("connection", function(socket) {
+  socket.setMaxListeners(50);
   //socket for saving the threshold values of the user config settings to mongodb
   socket.on("user-config", function(userConfig, callback) {
-    insertIntoUser(userConfig, function(res) {
-      if (res) callback(true);
-      else callback(false);
+    console.log(
+      userConfig.databasePass,
+      userConfig.port,
+      userConfig.databaseHost
+    );
+    client = redis.createClient({
+      port: userConfig.port,
+      host: userConfig.databaseHost,
+      password: userConfig.databasePass
+    });
+
+    client.on("error", function(err, res) {
+      if (err) {
+        console.log(err);
+        callback(false);
+        client.end();
+      }
+    });
+
+    client.on("ready", function(err, res) {
+      insertIntoUser(userConfig, function(res) {
+        if (res) callback(true);
+        else callback(false);
+      });
+      client.end();
     });
   });
 
-  socket.on("d", function(f) {
-    f("hello");
-  });
   //socket for updating user configuration
-  socket.on("update-user-config", function(userconfig, callback) {
-    updateUserConfig(userconfig, function(res) {
-      callback(res);
+  socket.on("update-user-config", function(userConfig, callback) {
+    console.log(
+      userConfig.databasePass,
+      userConfig.port,
+      userConfig.databaseHost
+    );
+    client = redis.createClient({
+      port: userConfig.port,
+      host: userConfig.databaseHost,
+      password: userConfig.databasePass
+    });
+
+    client.on("error", function(err, res) {
+      if (err) {
+        console.log(err);
+        callback(false);
+        client.end();
+      }
+    });
+
+    client.on("ready", function(err, res) {
+      updateUserConfig(userConfig, function(res) {
+        callback(true);
+        data.flags.performanceFlag = 0;
+        data.flags.hitRatioFlag = 0;
+        data.flags.memoryFlag = 0;
+        data.flags.numberOfClientsFlag = 0;
+      });
+      client.end();
     });
   });
+
   //socket for getting the user info from the database
   socket.on("get-user-data", function(callback) {
     getUserData(function(values) {
@@ -74,30 +137,10 @@ io.sockets.on("connection", function(socket) {
     getUserData(function(thresholdValues) {
       getinfo(thresholdValues, socket);
     });
-    // mongoClient.connect(url, { useNewUrlParser: true }, function(err, user) {
-    //   //connecting the mongoclient
-    //   if (err) throw err;
-    //   var databaseObject = user.db("RDBAlert"); //creating the database Obje
-    //   databaseObject
-    //     .collection("startmonitoring")
-    //     .find()
-    //     .toArray()
-    //     .then(res => {
-    //       if (res.length === 0) {
-    //         databaseObject
-    //           .collection("startmonitoring")
-    //           .insertOne({ inserted: 1 })
-    //           .then(res => {
-    //             console.log("Inserted one valeu");
-    //             getUserData(function(thresholdValues) {
-    //               getinfo(thresholdValues, socket);
-    //             });
-    //           });
-    //       }
-    //     });
-    // });
   });
 
+  //socket disconection
+  socket.on("disconnect", () => {});
   //socket for getting the data between two dates
   socket.on("get-data-between-two-dates", function(
     startDate,
@@ -153,6 +196,7 @@ function sendMail(mailOptions) {
       console.log(error);
     } else {
       console.log("Email sent: " + info.response);
+      blink = 2;
     }
   });
 }
@@ -185,8 +229,11 @@ function updateUserConfig(newUserConfig, callback) {
     databaseObject
       .collection("userconfig")
       .insertOne(newConfig, function(err, res) {
-        if (err) callback(null);
-        else callback(res);
+        if (err) callback(false);
+        else {
+          callback(true);
+          sendMailFlag = 0;
+        }
         user.close();
       });
   });
@@ -215,7 +262,7 @@ function countNoOfDocuments(callback) {
 function getUserData(callback) {
   mongoClient.connect(url, { useNewUrlParser: true }, function(err, user) {
     if (err) throw err;
-    var databaseObject = user.db("adbalert");
+    var databaseObject = user.db("rdbalert");
     databaseObject
       .collection("userconfig")
       .find()
@@ -264,36 +311,35 @@ function insertdataintoDateMetricDatabase(notifyData, callback) {
         if (res.length === 0)
           dateMetric.insertOne(notifyData, function(err, r) {
             if (err) {
-              console.log("Error found", res, notifyData);
+              callback(false);
               throw err;
-            } else console.log("Inserted in datewala", notifyData);
+            } else {
+              callback(true);
+            }
             datemetric.close();
-            callback(true);
           });
       });
   });
 }
 
+//function to get the info of the redis database
 function getinfo(userData, socket) {
-  if (rclient === null) {
-    rclient = redis.createClient(userData.port, userData.databaseHost);
-    console.log(
-      "Server infor ports and ip ",
-      rclient.connection_options.port,
-      userData.port
-    );
-    console.log(
-      "Server infor ports and ip ",
-      rclient.connection_options.host,
-      userData.databaseHost
-    );
+  if (rclient == null) {
+    rclient = redis.createClient({
+      port: userData.port,
+      host: userData.databaseHost,
+      password: userData.databasePass
+    });
   } else if (
     parseInt(userData.port) !== rclient.connection_options.port ||
     userData.databaseHost !== rclient.connection_options.host
   ) {
-    rclient = redis.createClient(userData.port, userData.databaseHost);
+    rclient = redis.createClient({
+      port: userData.port,
+      host: userData.databaseHost,
+      password: userData.databasePass
+    });
   }
-
   // data format that will be entered at the end of day
   var notifyData = {
     _id: 1,
@@ -305,22 +351,6 @@ function getinfo(userData, socket) {
   };
   let i = 1;
   setInterval(() => {
-    var data = {
-      metrics: {
-        performanceData: rclient.server_info.used_cpu_sys,
-        numberOfClient: rclient.server_info.connected_clients,
-        maximumMemory: rclient.server_info.maxmemory,
-        usedMemory: rclient.server_info.used_memory,
-        keySpaceHit: rclient.server_info.keySpaceHit,
-        keySpaceMiss: rclient.server_info.keySpaceMiss
-      },
-      flags: {
-        performanceFlag: 0,
-        memoryFlag: 0,
-        numberOfClientsFlag: 0
-      }
-    };
-
     //data format of metric which is going to added in database
     rclient.info((req, res) => {
       res.split("\n").map(line => {
@@ -356,6 +386,7 @@ function getinfo(userData, socket) {
         data.metrics.keySpaceHit /
         (data.metrics.keySpaceHit + data.metrics.keySpaceMiss)
     };
+
     //checking if hitratio is NaN
     if (isNaN(metrics.hitRatio)) {
       metrics.hitRatio = 0;
@@ -381,6 +412,7 @@ function getinfo(userData, socket) {
       notifyData.maxHitRatio = metrics.performanceMetric;
     }
 
+    //entering the max data at end of the day
     if (moment().format("HH:mm:ss") == "00:00:00") {
       notifyData._id = i;
       notifyData.createdAt = moment()
@@ -394,10 +426,7 @@ function getinfo(userData, socket) {
     }
 
     //insertng into the metric database
-    insertIntoMetricesDb(metrics, function(insert) {
-      if (insert) console.log("Data isnerted");
-      else console.log("Duplicate data");
-    });
+    insertIntoMetricesDb(metrics, function(insert) {});
 
     //condition checking for checking the performance of cpu
     if (
@@ -450,12 +479,12 @@ function getinfo(userData, socket) {
     //condition for checking the hit ratio alert
     if (
       data.metrics.keySpaceHit /
-        (data.metrics.keySpaceHit + data.metrics.keySpaceMiss) >
-        4 &&
-      data.metrics.keySpaceHit > 0 &&
-      data.metrics.keySpaceHit /
-        (data.metrics.keySpaceHit + data.metrics.keySpaceMiss) <
-        parseInt(userData.thresholdHitRatio)
+        (data.metrics.keySpaceHit + data.metrics.keySpaceMiss) >=
+        1 ||
+      (data.metrics.keySpaceHit > 0 &&
+        data.metrics.keySpaceHit /
+          (data.metrics.keySpaceHit + data.metrics.keySpaceMiss) <
+          parseInt(userData.thresholdHitRatio))
     ) {
       data.flags.hitRatioFlag = 1;
       var mailOptions = {
@@ -475,6 +504,11 @@ function getinfo(userData, socket) {
       });
     });
 
+    //socket for sending data to blink notification
+    if (sendMailFlag === 1 && blink === 2) {
+      blink = 1;
+      socket.emit("get-data-for-blinking-notification", data.flags);
+    }
     //socket for sending the real time data to dashboard
     socket.emit("info", data);
   }, 2000);
