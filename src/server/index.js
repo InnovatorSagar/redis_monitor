@@ -9,8 +9,23 @@ const mongoClient = require("mongodb").MongoClient; //url on which the mongodb i
 const nodemailer = require("nodemailer");
 const moment = require("moment");
 var sendMailFlag = 0; //variable used for sending the mail only once
-let blink = 1,
-  dashboard_loading = true;
+let blink = 1;
+var data = {
+  metrics: {
+    performanceData: 0,
+    numberOfClient: 1,
+    maximumMemory: 0,
+    usedMemory: 0,
+    keySpaceHit: 0,
+    keySpaceMiss: 0
+  },
+  flags: {
+    performanceFlag: 0,
+    memoryFlag: 0,
+    numberOfClientsFlag: 0,
+    hitRatioFlag: 0
+  }
+};
 const port = process.env.PORT || "4000";
 server.listen(port, () => {
   console.log(
@@ -53,6 +68,7 @@ io.sockets.on("connection", function(socket) {
       port: userConfig.port,
       host: userConfig.databaseHost,
       password: userConfig.databasePass
+<<<<<<< HEAD
     });
 
     client.on("error", function(err, res) {
@@ -63,12 +79,28 @@ io.sockets.on("connection", function(socket) {
       }
     });
 
+=======
+    });
+
+    client.on("error", function(err, res) {
+      if (err) {
+        console.log(err);
+        callback(false);
+        client.end();
+      }
+    });
+
+>>>>>>> 45efafcf841d7b5976e16b23df9ffa50f458c7c4
     client.on("ready", function(err, res) {
       insertIntoUser(userConfig, function(res) {
         if (res) callback(true);
         else callback(false);
       });
+<<<<<<< HEAD
       client.end(false);
+=======
+      client.end();
+>>>>>>> 45efafcf841d7b5976e16b23df9ffa50f458c7c4
     });
   });
 
@@ -89,15 +121,28 @@ io.sockets.on("connection", function(socket) {
       if (err) {
         console.log(err);
         callback(false);
+<<<<<<< HEAD
         client.end(false);
+=======
+        client.end();
+>>>>>>> 45efafcf841d7b5976e16b23df9ffa50f458c7c4
       }
     });
 
     client.on("ready", function(err, res) {
       updateUserConfig(userConfig, function(res) {
         callback(true);
+<<<<<<< HEAD
       });
       client.end(false);
+=======
+        data.flags.performanceFlag = 0;
+        data.flags.hitRatioFlag = 0;
+        data.flags.memoryFlag = 0;
+        data.flags.numberOfClientsFlag = 0;
+      });
+      client.end();
+>>>>>>> 45efafcf841d7b5976e16b23df9ffa50f458c7c4
     });
   });
 
@@ -124,6 +169,8 @@ io.sockets.on("connection", function(socket) {
     });
   });
 
+  //socket disconection
+  socket.on("disconnect", () => {});
   //socket for getting the data between two dates
   socket.on("get-data-between-two-dates", function(
     startDate,
@@ -478,12 +525,12 @@ function getinfo(userData, socket) {
     //condition for checking the hit ratio alert
     if (
       data.metrics.keySpaceHit /
-        (data.metrics.keySpaceHit + data.metrics.keySpaceMiss) >
-        4 &&
-      data.metrics.keySpaceHit > 0 &&
-      data.metrics.keySpaceHit /
-        (data.metrics.keySpaceHit + data.metrics.keySpaceMiss) <
-        parseInt(userData.thresholdHitRatio)
+        (data.metrics.keySpaceHit + data.metrics.keySpaceMiss) >=
+        1 ||
+      (data.metrics.keySpaceHit > 0 &&
+        data.metrics.keySpaceHit /
+          (data.metrics.keySpaceHit + data.metrics.keySpaceMiss) <
+          parseInt(userData.thresholdHitRatio))
     ) {
       data.flags.hitRatioFlag = 1;
       var mailOptions = {
@@ -503,6 +550,7 @@ function getinfo(userData, socket) {
       });
     });
 
+<<<<<<< HEAD
     //socket to emit data on notification
     if (sendMailFlag === 1 && blink === 2) {
       blink = 1;
@@ -510,6 +558,13 @@ function getinfo(userData, socket) {
       socket.emit("get-data-for-blinking-notification", data.flags);
     }
 
+=======
+    //socket for sending data to blink notification
+    if (sendMailFlag === 1 && blink === 2) {
+      blink = 1;
+      socket.emit("get-data-for-blinking-notification", data.flags);
+    }
+>>>>>>> 45efafcf841d7b5976e16b23df9ffa50f458c7c4
     //socket for sending the real time data to dashboard
     socket.emit("info", data);
   }, 2000);

@@ -11,8 +11,7 @@ class DashboardComponent extends Component {
       performanceFlag: 0,
       memoryFlag: 0,
       hitRatioFlag: 0,
-      numberOfClientsFlag: 0,
-      refresh: true
+      numberOfClientsFlag: 0
     };
   }
 
