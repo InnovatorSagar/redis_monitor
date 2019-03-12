@@ -3,6 +3,8 @@ import Modal from "react-awesome-modal";
 import "./DescriptionModalComponent.css";
 import { socket } from "../../index";
 
+const moment = require("moment");
+
 class DescriptionModalComponent extends Component {
   constructor(props) {
     super(props);
@@ -14,54 +16,74 @@ class DescriptionModalComponent extends Component {
       arrayOfData: []
     };
   }
+
+  setDateLimit = () => {
+    let today = moment();
+    today = today.subtract(1, "days");
+    today = today.format("YYYY-MM-DD");
+    return today;
+  };
+  validate = () => {
+    let startdatevar = this.state.startingdate;
+    let enddatevar = this.state.endingdate;
+    if (startdatevar === "" || enddatevar === "") {
+      return false;
+    }
+    return true;
+  };
+
   handleChange = event => {
     this.setState({ [event.target.name]: event.target.value });
   };
-  handleClick = event => {
-    let type = "Performance Data";
-    if (this.props.heading === "Performance Matrix") type = 3;
-    else if (this.props.heading === "Memory Matrix") type = 1;
-    else if (this.props.heading === "Number Of Clients Matrix") type = 2;
-    else type = 4;
-    this.setState({ dataFromDatabase: true }, () => {
-      socket.emit(
-        "get-data-between-two-dates",
-        this.state.startingdate,
-        this.state.endingdate,
-        type,
-        d => {
-          this.setState(
-            {
-              data: d
-            },
-            () => {
-              var arr = [];
-              let unit = "";
-              if (type === 1) unit = "KB";
-              else if (type === 2) unit = null;
-              else if (type === 3) unit = "UNITS";
-              else unit = "%";
-              for (let i = 0; i < this.state.data.length; i++) {
-                arr.push(<span>{d[i].date}</span>);
-                arr.push(
-                  <span>
-                    {d[i].data}
-                    {unit}
-                  </span>
-                );
-              }
-              //console.log(arr);
-              this.setState({ arrayOfData: arr });
-            }
-          );
-        }
-      );
-    });
 
+  handleClick = event => {
+    let res = this.validate();
+    if (res) {
+      let type = "Performance Data";
+      if (this.props.heading === "Performance Matrix") type = 3;
+      else if (this.props.heading === "Memory Matrix") type = 1;
+      else if (this.props.heading === "Number Of Clients Matrix") type = 2;
+      else type = 4;
+      this.setState({ dataFromDatabase: true }, () => {
+        socket.emit(
+          "get-data-between-two-dates",
+          this.state.startingdate,
+          this.state.endingdate,
+          type,
+          d => {
+            this.setState(
+              {
+                data: d
+              },
+              () => {
+                var arr = [];
+                let unit = "";
+                if (type === 1) unit = "KB";
+                else if (type === 2) unit = null;
+                else if (type === 3) unit = "UNITS";
+                else unit = "%";
+                for (let i = 0; i < this.state.data.length; i++) {
+                  arr.push(<span>{d[i].date}</span>);
+                  arr.push(
+                    <span>
+                      {d[i].data}
+                      {unit}
+                    </span>
+                  );
+                }
+                //console.log(arr);
+                this.setState({ arrayOfData: arr });
+              }
+            );
+          }
+        );
+      });
+    }
     // event.preventDefault();
   };
   render() {
     const { visible, closeModal, heading } = this.props;
+
     return (
       <section>
         {this.state.dataFromDatabase && this.state.data !== null && (
@@ -75,15 +97,7 @@ class DescriptionModalComponent extends Component {
                 <span>
                   <strong>Matrix Data</strong>
                 </span>
-                {
-                  /* {this.state.data.map(curr_data => {
-                  return (
-                      <span>{curr_data.date}</span>
-                      <span>{curr_data.data}</span>
-                  );
-                })} */
-                  this.state.arrayOfData
-                }
+                {this.state.arrayOfData}
               </div>
               <section>
                 <button className="cancel-btn" onClick={closeModal}>
@@ -104,6 +118,7 @@ class DescriptionModalComponent extends Component {
                   type="date"
                   name="startingdate"
                   value={this.state.startingdate}
+                  max={this.setDateLimit()}
                   onChange={e => this.handleChange(e)}
                 />
               </section>
@@ -113,6 +128,7 @@ class DescriptionModalComponent extends Component {
                   type="date"
                   name="endingdate"
                   value={this.state.endingdate}
+                  max={this.setDateLimit()}
                   onChange={e => this.handleChange(e)}
                 />
               </section>

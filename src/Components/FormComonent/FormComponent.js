@@ -30,19 +30,23 @@ class FormComponent extends Component {
   };
 
   validate = () => {
-    let validIpformat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-    let emailvar = this.state.email;
-    let databaseHostvar = this.state.databaseHost;
+    let emailVar = this.state.email;
+    let hitRatioVar = this.state.hitratiometric;
+    //let thersholdMemoryVar = this.state.thersholdMemory;
     let res = true;
-    if (emailvar.indexOf("@") === -1) {
+    if (emailVar.indexOf("@") === -1) {
       this.setState({ email: "" });
       res = false;
     }
-    if (!databaseHostvar.match(validIpformat)) {
-      this.setState({ databaseHost: "" });
+    if (parseInt(hitRatioVar) >= 1) {
+      this.setState({ hitratiometric: "" });
       res = false;
     }
-
+    // console.log("threshold memory", thersholdMemoryVar);
+    // if(parseInt(thersholdMemoryVar) > this.state.thersholdMemory) {
+    //   this.setState({ thersholdMemory: "" });
+    //   res = false;
+    // }
     return res;
   };
 

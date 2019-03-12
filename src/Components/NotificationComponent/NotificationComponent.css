@@ -25,3 +25,12 @@
   align-self: center;
   color: white;
 }
+.config-btn {
+  height: 36px;
+  width: 160px;
+  border-radius: 4px;
+  background-color: black;
+  text-align: center;
+  align-self: center;
+  color: white;
+}
