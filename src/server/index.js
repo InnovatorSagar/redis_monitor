@@ -10,7 +10,7 @@ const nodemailer = require("nodemailer");
 const moment = require("moment");
 var sendMailFlag = 0; //variable used for sending the mail only once
 
-const port = process.env.PORT || "4000";
+const port = process.env.PORT || 4000;
 server.listen(port, () => {
   console.log(
     "Listening to port",
@@ -215,7 +215,7 @@ function countNoOfDocuments(callback) {
 function getUserData(callback) {
   mongoClient.connect(url, { useNewUrlParser: true }, function(err, user) {
     if (err) throw err;
-    var databaseObject = user.db("adbalert");
+    var databaseObject = user.db("rdbalert");
     databaseObject
       .collection("userconfig")
       .find()
@@ -275,6 +275,7 @@ function insertdataintoDateMetricDatabase(notifyData, callback) {
 }
 
 function getinfo(userData, socket) {
+  console.log("user data",userData);
   if (rclient === null) {
     rclient = redis.createClient(userData.port, userData.databaseHost);
     console.log(

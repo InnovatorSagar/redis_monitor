@@ -78,11 +78,9 @@ class MatrixCardComponent extends Component {
           <div className="buttons">
             <div className="notification" onClick={this.descriptionModal}>
               <img src={description} alt="alert" />
-              <p> 1</p>
             </div>
             <div className="notification" onClick={this.notificationModal}>
               <img src={alert_on} alt="alert" />
-              <p> 3</p>
             </div>
           </div>
         </div>
