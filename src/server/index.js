@@ -13,7 +13,7 @@ let blink = 1;
 var data = {
   metrics: {
     performanceData: 0,
-    numberOfClient: 0,
+    numberOfClient: 1,
     maximumMemory: 0,
     usedMemory: 0,
     keySpaceHit: 0,
