@@ -23,12 +23,22 @@ class DescriptionModalComponent extends Component {
     today = today.format('YYYY-MM-DD');
     return today;
   }
+  validate = () => {
+    let startdatevar = this.state.startingdate;
+    let enddatevar = this.state.endingdate;
+    if(startdatevar === "" || enddatevar === "") {
+      return false;
+    }
+    return true;
+  }
 
   handleChange = event => {
     this.setState({ [event.target.name]: event.target.value });
   };
 
   handleClick = event => {
+    let res= this.validate();
+    if(res) {
     let type = "Performance Data";
     if (this.props.heading === "Performance Matrix") type = 3;
     else if (this.props.heading === "Memory Matrix") type = 1;
@@ -68,6 +78,7 @@ class DescriptionModalComponent extends Component {
         }
       );
     });
+  }
     // event.preventDefault();
   };
   render() {
@@ -87,12 +98,6 @@ class DescriptionModalComponent extends Component {
                   <strong>Matrix Data</strong>
                 </span>
                 {
-                  /* {this.state.data.map(curr_data => {
-                  return (
-                      <span>{curr_data.date}</span>
-                      <span>{curr_data.data}</span>
-                  );
-                })} */
                   this.state.arrayOfData
                 }
               </div>

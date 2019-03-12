@@ -1,11 +1,12 @@
 import React, { Component } from "react";
+import { Link } from 'react-router-dom';
 import Modal from "react-awesome-modal";
 import ProgressBarComponent from "../ProgressBar/ProgressBarComponent";
 import "./NotificationComponent.css";
 
 class NotificationComponent extends Component {
   render() {
-    const { visible, closeModal, heading, data } = this.props;
+    const { visible, closeModal, heading, data, changeConf } = this.props;
     console.log("Data foudn is ", data);
     var percentage, message;
     console.log("Inside render of notification");
@@ -39,9 +40,12 @@ class NotificationComponent extends Component {
             <hr />
             <p>{message}</p>
             <ProgressBarComponent percentage={percentage} />
+            <section>
             <button className="close-btn" onClick={closeModal}>
               Close
             </button>
+            {changeConf && <Link to="/Configure"><button className="config-btn">Change Configuration</button></Link>}
+            </section>
           </div>
         </Modal>
       </section>

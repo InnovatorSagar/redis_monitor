@@ -19,6 +19,8 @@
 
 .notification {
   display: flex;
+  height: 20px;
+  width: 18px;
   margin: 0px 0px 1em 3px;
   padding: 1px 4px 1px 4px;
   border: 1px solid;

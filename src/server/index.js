@@ -9,7 +9,7 @@ const mongoClient = require("mongodb").MongoClient; //url on which the mongodb i
 const nodemailer = require("nodemailer");
 const moment = require("moment");
 var sendMailFlag = 0; //variable used for sending the mail only once
-
+let blink =1;
 const port = process.env.PORT || 4000;
 server.listen(port, () => {
   console.log(
@@ -153,6 +153,8 @@ function sendMail(mailOptions) {
       console.log(error);
     } else {
       console.log("Email sent: " + info.response);
+    //  sendMailFlag=0;
+    blink = 2;
     }
   });
 }
@@ -316,9 +318,10 @@ function getinfo(userData, socket) {
         keySpaceMiss: rclient.server_info.keySpaceMiss
       },
       flags: {
-        performanceFlag: 0,
+        performanceFlag: 1,
         memoryFlag: 0,
-        numberOfClientsFlag: 0
+        numberOfClientsFlag: 0,
+        hitRatioFlag : 0
       }
     };
 
@@ -396,8 +399,6 @@ function getinfo(userData, socket) {
 
     //insertng into the metric database
     insertIntoMetricesDb(metrics, function(insert) {
-      if (insert) console.log("Data isnerted");
-      else console.log("Duplicate data");
     });
 
     //condition checking for checking the performance of cpu
@@ -407,20 +408,22 @@ function getinfo(userData, socket) {
       sendMailFlag == 0
     ) {
       data.flags.performanceFlag = 1;
+      console.log("p:,",data);
       var mailOptions = {
         from: "aloowalia22@gmail.com",
         to: userData.email,
         subject: "Performance Alert regarding redis database",
         text: "PERFORMANCE ALERT"
       };
-      sendMail(mailOptions);
       sendMailFlag = 1;
+      sendMail(mailOptions);
+      
     }
 
     //condition for checking the used memory by redis
     if (
       data.metrics.usedMemory > parseInt(userData.thresholdMemory) &&
-      sendMailFlag == 0
+      sendMailFlag === 0
     ) {
       data.flags.memoryFlag = 1;
       var mailOptions = {
@@ -429,14 +432,18 @@ function getinfo(userData, socket) {
         subject: "Memory Alert regarding redis database",
         text: "MEMORY ALERT"
       };
-      sendMail(mailOptions);
       sendMailFlag = 1;
+      sendMail(mailOptions);
+      
     }
     //condition for checking the no of clients alert
+    //console.log("Date: ",data);
+    //console.log("User Data ,",parseInt(userData.thresholdNoOfClients));
     if (
       data.metrics.numberOfClient > parseInt(userData.thresholdNoOfClients) &&
       sendMailFlag == 0
     ) {
+      //console.log("Ghusa : ",data);
       data.flags.numberOfClientsFlag = 1;
       var mailOptions = {
         from: "aloowalia22@gmail.com",
@@ -444,8 +451,9 @@ function getinfo(userData, socket) {
         subject: "No of Clients Alert regarding redis database",
         text: "NO OF CLIENTS ALERT"
       };
-      sendMail(mailOptions);
       sendMailFlag = 1;
+      sendMail(mailOptions);
+     //console.log("Client badh gye : ",data);
     }
 
     //condition for checking the hit ratio alert
@@ -465,8 +473,8 @@ function getinfo(userData, socket) {
         subject: "Hit Ratio Alert regarding redis database",
         text: "Hit Ratio ALERT"
       };
-      sendMail(mailOptions);
       sendMailFlag = 1;
+      sendMail(mailOptions);
     }
 
     //socket for sending the notify data to notification
@@ -476,6 +484,11 @@ function getinfo(userData, socket) {
       });
     });
 
+    if(sendMailFlag===1 && blink === 2)
+    { blink =1;
+      //console.log("Chal rha hu, jayega ye ",data);
+      socket.emit("get-data-for-blinking-notification", data.flags);
+    }
     //socket for sending the real time data to dashboard
     socket.emit("info", data);
   }, 2000);
