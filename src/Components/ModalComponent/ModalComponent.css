@@ -1,0 +1,10 @@
+.modalmssg {
+}
+.continuebutton {
+  height: 40px;
+  width: 400px;
+  border: 1px solid #000000;
+  border-radius: 4px;
+  margin-top: 20px;
+  margin-right: 13px;
+}

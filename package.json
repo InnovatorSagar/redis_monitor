@@ -1,0 +1,48 @@
+{
+  "name": "rdbalert",
+  "version": "1.0.0",
+  "description": "RDBALERT is an Open Source Redis Monitoring system that will help you in taking care of health of your redis along with sending alerts to admin if something goes wrong with redis's health.",
+  "main": "index.js",
+  "engines": {
+    "node": "8.10.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "dependencies": {
+    "chart.js": "^2.7.3",
+    "express": "*",
+    "mongodb": "^3.1.13",
+    "nodemailer": "^5.1.1",
+    "nodemon": "^1.18.10",
+    "path": "^0.12.7",
+    "react": "^16.8.3",
+    "react-awesome-modal": "^2.0.5",
+    "react-chartjs-2": "^2.7.4",
+    "react-dom": "^16.8.3",
+    "react-redux": "^6.0.1",
+    "react-router-dom": "^4.3.1",
+    "react-scripts": "2.1.5",
+    "redis": "*",
+    "redux": "^4.0.1",
+    "redux-thunk": "^2.3.0",
+    "socket.io": "*",
+    "socket.io-client": "^2.2.0",
+    "sudo": "^1.0.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git.hashedin.com:sagar.tyagi/rdbalert.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}

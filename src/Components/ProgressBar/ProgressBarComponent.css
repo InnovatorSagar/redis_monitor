@@ -1,0 +1,8 @@
+.progress-bar {
+    position: relative;
+    height: 8px;
+    width: 460px;
+    border-radius: 10px;
+    background-color: white;
+    padding: 20px;
+}
