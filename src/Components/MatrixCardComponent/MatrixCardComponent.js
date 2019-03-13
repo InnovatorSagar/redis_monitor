@@ -109,7 +109,7 @@ class MatrixCardComponent extends Component {
               <img src={description} alt="alert" />
             </div>
             <div className="notification" onClick={this.notificationModal}>
-              {this.blinkbutton(this.state.notify) && (
+              {this.blinkbutton(this.props.notify) && (
                 <img src={alert_on} alt="alert" />
               )}
             </div>

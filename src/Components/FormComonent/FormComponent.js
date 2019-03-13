@@ -21,7 +21,8 @@ class FormComponent extends Component {
       databaseHost: "",
       redirect: false,
       sentData: false,
-      haveData: false
+      haveData: false,
+      error_wala: false
     };
   }
 
@@ -73,20 +74,33 @@ class FormComponent extends Component {
         databaseHost: this.state.databaseHost
       };
       this.setState({ redirect: true });
-      if (this.state.haveData)
+      if (this.state.haveData) {
+        console.log("Emitted");
         socket.emit("update-user-config", data, callback => {
           console.log("Callback recieved is ", callback);
+          if (!callback) {
+            this.setState(
+              {
+                error_wala: true,
+                sentData: false
+              },
+              () => {
+                console.log(this.state);
+              }
+            );
+          }
           if (callback)
             this.setState(
               {
-                sentData: true
+                sentData: true,
+                error_wala: false
               },
               () => {
                 console.log("Chnges state ", this.state);
               }
             );
         });
-      else
+      } else
         socket.emit("user-config", data, callback => {
           if (callback) this.setState({ sentData: true });
         });
@@ -120,6 +134,14 @@ class FormComponent extends Component {
     return (
       <div className="form-container">
         {this.state.sentData && (
+          <FormDataConfirmationModal
+            visible={this.state.redirect}
+            closeModal={this.closeModal}
+            sentData={this.state.sentData}
+            haveData={this.state.haveData}
+          />
+        )}
+        {this.state.error_wala && (
           <FormDataConfirmationModal
             visible={this.state.redirect}
             closeModal={this.closeModal}

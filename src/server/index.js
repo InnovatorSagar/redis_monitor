@@ -120,6 +120,7 @@ io.sockets.on("connection", function(socket) {
         data.flags.hitRatioFlag = 0;
         data.flags.memoryFlag = 0;
         data.flags.numberOfClientsFlag = 0;
+        sendMailFlag = 0;
         console.log("Sending response", r);
         callback(r);
       });
@@ -251,6 +252,12 @@ function updateUserConfig(newUserConfig, callback) {
           console.log("Database updation insrtedd");
           callback(true);
           sendMailFlag = 0;
+          data.flags = {
+            performanceFlag: 0,
+            hitRatioFlag: 0,
+            numberOfClientsFlag: 0,
+            memoryFlag: 0
+          };
         }
         user.close();
       });
@@ -368,22 +375,7 @@ function getinfo(userData, socket) {
     maxHitRatio: 0
   };
   let i = 1;
-  var data = {
-    metrics: {
-      performanceData: rclient.server_info.used_cpu_sys,
-      numberOfClient: rclient.server_info.connected_clients,
-      maximumMemory: rclient.server_info.maxmemory,
-      usedMemory: rclient.server_info.used_memory,
-      keySpaceHit: rclient.server_info.keySpaceHit,
-      keySpaceMiss: rclient.server_info.keySpaceMiss
-    },
-    flags: {
-      performanceFlag: 0,
-      memoryFlag: 0,
-      numberOfClientsFlag: 0,
-      hitRatioFlag: 0
-    }
-  };
+
   setInterval(() => {
     //data format of metric which is going to added in database
     rclient.info((req, res) => {
@@ -499,6 +491,7 @@ function getinfo(userData, socket) {
       data.metrics.numberOfClient > parseInt(userData.thresholdNoOfClients) &&
       sendMailFlag == 0
     ) {
+      console.log("NOC");
       data.flags.numberOfClientsFlag = 1;
       var mailOptions = {
         from: "aloowalia22@gmail.com",
@@ -538,6 +531,9 @@ function getinfo(userData, socket) {
       });
     });
 
+    console.log("Data is :", data);
+    console.log("Send mail flag", sendMailFlag);
+    console.log("Blink", blink);
     //socket for sending data to blink notification
     if (sendMailFlag === 1 && blink === 2) {
       blink = 1;
