@@ -14,7 +14,7 @@ class App extends Component {
   render() {
     return (
       <Provider store={store}>
-        <Router>
+        <Router history={hashHistory}>
           <div className="App">
             <Route exact path="/" component={HomeComponent} />
             <Route exact path="/Memory" component={MemoryChart} />
