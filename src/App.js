@@ -9,7 +9,7 @@ import ClientChart from "./Components/ClientComponent/ClienChart";
 import MemoryChart from "./Components/MemoryComponent/MemoryChart";
 import DashboardComponent from "./Components/DashboardComponent/DashboardComponent";
 import FormComponent from "./Components/FormComonent/FormComponent";
-
+let hashHistory = Router.hashHistory;
 class App extends Component {
   render() {
     return (
