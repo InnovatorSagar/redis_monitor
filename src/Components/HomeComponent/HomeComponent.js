@@ -41,10 +41,10 @@ class HomeComponent extends Component {
         <div className="main">
           <img src={logo} alt="homeimage" className="logo" />
           <h1>RDBAlert</h1>
-          <h2>HEADLINE GOES HERE</h2>
+          <h2>The baby sitter of your redis.</h2>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit , sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            RDBALERT is an open source redis-server monitoring tool which allows
+            a developer to get ful control of their redis server.
           </p>
           <div className="signup-login">
             <button
