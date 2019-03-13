@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const path = require("path");
+var cors = require("cors");
 const server = require("http").createServer(app);
 const io = require("socket.io")(server);
 const redis = require("redis");
@@ -8,6 +9,7 @@ const url = process.env.MONGOLAB_URI || "mongodb://localhost:27017/";
 const mongoClient = require("mongodb").MongoClient; //url on which the mongodb is giving services
 const nodemailer = require("nodemailer");
 const moment = require("moment");
+const bodyParser = require("body-parser");
 var sendMailFlag = 0; //variable used for sending the mail only once
 let blink = 1;
 var data = {
@@ -36,19 +38,19 @@ server.listen(port, () => {
   );
 });
 let rclient = null;
+app.use(cors());
 app.use(express.static(path.join(__dirname, "../../build")));
-
+app.use(bodyParser.json());
 //testing the server on index.html
 app.get("/", function(req, res) {
   res.sendFile(__dirname + "./index.html");
 });
 
 app.get("/port_address", function(req, res) {
-  return res.send(process.env.PORT);
+  return res.send();
 });
-
-app.get("*", function(req, res) {
-  res.redirect("/");
+app.get("/*", function(req, res) {
+  res.sendFile(__dirname + "/dist/index.html");
 });
 
 class Record {
@@ -114,11 +116,11 @@ io.sockets.on("connection", function(socket) {
 
     client.on("ready", function(err, res) {
       updateUserConfig(userConfig, function(res) {
-        callback(true);
         data.flags.performanceFlag = 0;
         data.flags.hitRatioFlag = 0;
         data.flags.memoryFlag = 0;
         data.flags.numberOfClientsFlag = 0;
+        callback(true);
       });
       client.end();
     });
@@ -231,6 +233,7 @@ function updateUserConfig(newUserConfig, callback) {
   mongoClient.connect(url, { useNewUrlParser: true }, function(err, user) {
     //connecting the mongoclient
     if (err) throw err;
+    console.log("Connected to mongodb");
     var databaseObject = user.db("rdbalert");
     var newConfig = newUserConfig;
     databaseObject.collection("userconfig").drop();
