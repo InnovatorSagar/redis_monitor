@@ -35,14 +35,30 @@ class FormComponent extends Component {
     let hitRatioVar = this.state.hitratiometric;
     //let thersholdMemoryVar = this.state.thersholdMemory;
     let res = true;
+    if (
+      this.state.name === "" ||
+      this.state.thersholdMemor === "" ||
+      this.state.thresholdCpuPerformance === "" ||
+      this.state.thresholdNoOfClients === "" ||
+      this.state.hitratiometric === "" ||
+      this.state.organization === "" ||
+      this.state.port === "" ||
+      this.state.databaseHost === "" ||
+      this.state.databasePass === ""
+    ) {
+      this.setState({ error_wala: true });
+    }
     if (emailVar.indexOf("@") === -1) {
       this.setState({ email: "" });
+      this.setState({ error_wala: true });
       res = false;
     }
     if (parseInt(hitRatioVar) >= 1) {
       this.setState({ hitratiometric: "" });
+      this.setState({ error_wala: true });
       res = false;
     }
+
     // console.log("threshold memory", thersholdMemoryVar);
     // if(parseInt(thersholdMemoryVar) > this.state.thersholdMemory) {
     //   this.setState({ thersholdMemory: "" });

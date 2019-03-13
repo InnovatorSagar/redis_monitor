@@ -51,7 +51,7 @@ app.get("/port_address", function(req, res) {
 });
 console.log(__dirname);
 app.get("/*", function(req, res) {
-  res.sendFile(path.resolve(__dirname + "../../../public/index.html"));
+  res.sendFile(path.resolve(__dirname + "../../public/index.html"));
 });
 
 class Record {
@@ -86,6 +86,7 @@ io.sockets.on("connection", function(socket) {
     });
 
     client.on("ready", function(err, res) {
+      console.log(11111);
       insertIntoUser(userConfig, function(res) {
         if (res) callback(true);
         else callback(false);
