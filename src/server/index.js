@@ -51,7 +51,7 @@ app.get("/port_address", function(req, res) {
 });
 console.log(__dirname);
 app.get("/*", function(req, res) {
-  res.sendFile(__dirname + "../../public/index.html");
+  res.sendFile(path.resolve(__dirname + "../../../public/index.html"));
 });
 
 class Record {
