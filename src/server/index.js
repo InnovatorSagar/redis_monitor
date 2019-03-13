@@ -115,12 +115,13 @@ io.sockets.on("connection", function(socket) {
     });
 
     client.on("ready", function(err, res) {
-      updateUserConfig(userConfig, function(res) {
+      updateUserConfig(userConfig, function(r) {
         data.flags.performanceFlag = 0;
         data.flags.hitRatioFlag = 0;
         data.flags.memoryFlag = 0;
         data.flags.numberOfClientsFlag = 0;
-        callback(true);
+        console.log("Sending response", r);
+        callback(r);
       });
       client.end();
     });
@@ -232,7 +233,9 @@ function insertIntoUser(userConfig, fn) {
 function updateUserConfig(newUserConfig, callback) {
   mongoClient.connect(url, { useNewUrlParser: true }, function(err, user) {
     //connecting the mongoclient
-    if (err) throw err;
+    if (err) {
+      callback(true);
+    }
     console.log("Connected to mongodb");
     var databaseObject = user.db("rdbalert");
     var newConfig = newUserConfig;
@@ -242,6 +245,8 @@ function updateUserConfig(newUserConfig, callback) {
       .insertOne(newConfig, function(err, res) {
         if (err) callback(false);
         else {
+          console.log(res);
+          console.log("Database updation insrtedd");
           callback(true);
           sendMailFlag = 0;
         }

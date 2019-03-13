@@ -75,10 +75,16 @@ class FormComponent extends Component {
       this.setState({ redirect: true });
       if (this.state.haveData)
         socket.emit("update-user-config", data, callback => {
-          if (callback != null)
-            this.setState({
-              sentData: true
-            });
+          console.log("Callback recieved is ", callback);
+          if (callback)
+            this.setState(
+              {
+                sentData: true
+              },
+              () => {
+                console.log("Chnges state ", this.state);
+              }
+            );
         });
       else
         socket.emit("user-config", data, callback => {
@@ -107,6 +113,7 @@ class FormComponent extends Component {
     });
   }
   render() {
+    console.log("Rendring after modal");
     console.log("redirect", this.state.sentData);
     let button = "Submit";
     if (this.state.haveData) button = "Update";
