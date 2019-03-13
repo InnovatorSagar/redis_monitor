@@ -49,8 +49,9 @@ app.get("/", function(req, res) {
 app.get("/port_address", function(req, res) {
   return res.send();
 });
+console.log(__dirname);
 app.get("/*", function(req, res) {
-  res.sendFile(__dirname + "/build/index.html");
+  res.sendFile(__dirname + "../../public/index.html");
 });
 
 class Record {
