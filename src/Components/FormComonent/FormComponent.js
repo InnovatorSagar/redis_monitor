@@ -77,6 +77,7 @@ class FormComponent extends Component {
     const res = this.validate();
     this.setState({ redirect: true });
     if (res) {
+      this.setState({ error_wala: false });
       const data = {
         name: this.state.name,
         email: this.state.email,
