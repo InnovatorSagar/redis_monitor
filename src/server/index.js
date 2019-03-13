@@ -50,7 +50,7 @@ app.get("/port_address", function(req, res) {
   return res.send();
 });
 app.get("/*", function(req, res) {
-  res.sendFile(__dirname + "/dist/index.html");
+  res.sendFile(__dirname + "/build/index.html");
 });
 
 class Record {
