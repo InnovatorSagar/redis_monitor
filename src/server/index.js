@@ -47,6 +47,10 @@ app.get("/port_address", function(req, res) {
   return res.send(process.env.PORT);
 });
 
+app.get("*", function(req, res) {
+  res.redirect("/");
+});
+
 class Record {
   constructor(date, data) {
     this.date = date;
