@@ -243,8 +243,10 @@ function updateUserConfig(newUserConfig, callback) {
     databaseObject
       .collection("userconfig")
       .insertOne(newConfig, function(err, res) {
-        if (err) callback(false);
-        else {
+        if (err) {
+          console.log("sending ffalse");
+          callback(false);
+        } else {
           console.log(res);
           console.log("Database updation insrtedd");
           callback(true);

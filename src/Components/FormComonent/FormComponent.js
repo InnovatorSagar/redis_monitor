@@ -119,12 +119,14 @@ class FormComponent extends Component {
     if (this.state.haveData) button = "Update";
     return (
       <div className="form-container">
-        <FormDataConfirmationModal
-          visible={this.state.redirect}
-          closeModal={this.closeModal}
-          sentData={this.state.sentData}
-          haveData={this.state.haveData}
-        />
+        {this.state.sentData && (
+          <FormDataConfirmationModal
+            visible={this.state.redirect}
+            closeModal={this.closeModal}
+            sentData={this.state.sentData}
+            haveData={this.state.haveData}
+          />
+        )}
         <HeaderComponent heading="Database Configurations" />
         <h3>DATABASE CONFIGURATIONS</h3>
         <hr />
