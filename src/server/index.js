@@ -108,6 +108,7 @@ io.sockets.on("connection", function(socket) {
 
     client.on("error", function(err, res) {
       if (err) {
+        console.log("Auth error");
         console.log(err);
         callback(false);
         client.end();
@@ -531,9 +532,6 @@ function getinfo(userData, socket) {
       });
     });
 
-    console.log("Data is :", data);
-    console.log("Send mail flag", sendMailFlag);
-    console.log("Blink", blink);
     //socket for sending data to blink notification
     if (sendMailFlag === 1 && blink === 2) {
       blink = 1;
