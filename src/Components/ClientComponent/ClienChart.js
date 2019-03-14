@@ -13,7 +13,7 @@ class ClientChart extends Component {
           {
             type: "line",
             label: "Number of Clients of System",
-            backgroundColor: "orange",
+            borderColor: "orange",
             borderWidth: "2",
             lineTension: 0.45,
             data: []
@@ -21,6 +21,7 @@ class ClientChart extends Component {
         ]
       },
       lineChartOptions: {
+        zoomEnabled: true,
         responsive: true,
         maintainAspectRatio: false,
         scales: {
@@ -38,16 +39,15 @@ class ClientChart extends Component {
       memory: null
     };
   }
-  change(d) {
+  change(d, u) {
     this.setState(prevState => ({
+      max: u,
       memory: d
     }));
   }
-
   componentDidMount() {
     socket.on("info", data => {
-      this.change(data.metrics.numberOfClient);
-      this.setState({ percentage: this.state.memory });
+      this.change(data.metrics.numberOfClient, data.metrics);
       const oldDataSet = this.state.lineChartData.datasets[0];
       const newDataSet = { ...oldDataSet };
       newDataSet.data.push(this.state.memory);

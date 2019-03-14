@@ -44,7 +44,7 @@ class NotificationComponent extends Component {
             <button className="close-btn" onClick={closeModal}>
               Close
             </button>
-            {changeConf && <Link to="/Configure"><button className="config-btn">Change Configuration</button></Link>}
+            {changeConf===1 && <Link to="/Configure"><button className="config-btn">Change Configuration</button></Link>}
             </section>
           </div>
         </Modal>

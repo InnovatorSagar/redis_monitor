@@ -41,7 +41,6 @@ class HomeComponent extends Component {
         <div className="main">
           <img src={logo} alt="homeimage" className="logo" />
           <h1>RDBAlert</h1>
-          <h2>HEADLINE GOES HERE</h2>
           <p>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit , sed do
             eiusmod tempor incididunt ut labore et dolore magna aliqua.

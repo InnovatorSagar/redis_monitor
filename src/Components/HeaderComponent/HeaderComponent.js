@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "./Header.css";
-import { Redirect } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
 const rdbAlertLogo = require("../../assets/logo_2.png");
 const user = require("../../assets/user.png");
 const home = require("../../assets/home.png");
@@ -30,7 +30,7 @@ class HeaderComponent extends Component {
     return (
       <header>
         <div className="header">
-          <img src={rdbAlertLogo} alt="rdbAlert-logo" />
+          <Link to="/"><img className="imgclass" src={rdbAlertLogo} alt="rdbAlert-logo" /></Link>
           <h3>{this.props.heading}</h3>
           {this.props.heading !== "Database Configurations" && (
             <button type="submit" onClick={this.userClick}>

@@ -17,7 +17,7 @@ class MatrixCardComponent extends Component {
       component: null,
       notificationModal: false,
       descriptionModal: false,
-      notify: false,
+      notify: null,
       blink: true,
       data: null,
     };
