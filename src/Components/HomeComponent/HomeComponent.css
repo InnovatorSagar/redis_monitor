@@ -1,6 +1,7 @@
 .app-contain {
   display: flex;
   justify-content: flex-start;
+  background-color: white;
 }
 
 .home-image {
@@ -22,13 +23,14 @@
 }
 
 .main > p {
-  color: grey;
+  color: black;
   text-align: left;
   margin-top: 4px;
 }
 
 .main > h1 {
   text-align: left;
+  color: black;
 }
 
 .main > h2 {

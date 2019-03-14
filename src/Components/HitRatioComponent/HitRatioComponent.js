@@ -13,7 +13,7 @@ class HitRatioChart extends Component {
           {
             type: "line",
             label: "Hit-Ratio",
-            backgroundColor: "yellow",
+            borderColor: "#00BFFF",
             borderWidth: "2",
             lineTension: 0.45,
             data: []

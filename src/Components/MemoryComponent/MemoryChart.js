@@ -13,9 +13,8 @@ class MemoryChart extends Component {
           {
             type: "line",
             label: "Memory of System",
-            backgroundColor: ["blue"],
+            borderColor: "#00BFFF",
             borderWidth: "2",
-            lineTension: 0.45,
             percentage: 0,
             data: []
           }
@@ -26,18 +25,23 @@ class MemoryChart extends Component {
         maintainAspectRatio: false,
         scales: {
           xAxes: [
-            {
-              ticks: {
-                autoSkip: true,
-                maxTicksLimit: 10
-              }
+             {
+              gridLines: {
+               },
+               ticks: {
+                 stepSize: 60,
+                 autoSkip: true,
+                 maxTicksLimit: 10,
+               }
             }
           ],
           yAxes: [
             {
+              gridLines: {
+               },
               ticks: {
                 beginAtZero: true,
-                min: 0
+                min: 0,
               }
             }
           ]
@@ -56,7 +60,6 @@ class MemoryChart extends Component {
   componentDidMount() {
     socket.on("info", data => {
       this.change(data.metrics.usedMemory);
-      this.setState({ percentage: this.state.memory });
       const oldDataSet = this.state.lineChartData.datasets[0];
       const newDataSet = { ...oldDataSet };
       newDataSet.data.push(this.state.memory);
@@ -66,13 +69,11 @@ class MemoryChart extends Component {
       const newChartData = {
         ...this.state.lineChartData,
         datasets: [newDataSet],
-        labels: this.state.lineChartData.labels.concat(
-          new Date().toLocaleTimeString()
-        )
-      };
-      if (newChartData.labels.length % 8 === 0) {
-        newChartData.labels.shift();
+        labels: this.state.lineChartData.labels.concat(new Date().toLocaleTimeString()) 
       }
+      if (newChartData.labels.length % 8 === 0) {
+         newChartData.labels.shift();
+       }
       this.setState({ lineChartData: newChartData });
     });
   }
