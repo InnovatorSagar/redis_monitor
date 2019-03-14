@@ -41,7 +41,6 @@ class HomeComponent extends Component {
         <div className="main">
           <img src={logo} alt="homeimage" className="logo" />
           <h1>RDBAlert</h1>
-          <h2>The baby sitter of your redis.</h2>
           <p>
             RDBALERT is an open source redis-server monitoring tool which allows
             a developer to get ful control of their redis server.

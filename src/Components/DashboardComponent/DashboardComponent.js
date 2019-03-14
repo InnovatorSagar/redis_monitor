@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+//import html2canvas from 'html2canvas';
 import "./DashboardComponent.css";
 import MatrixCardComponent from "../MatrixCardComponent/MatrixCardComponent";
 import HeaderComponent from "../HeaderComponent/HeaderComponent";
@@ -14,6 +15,14 @@ class DashboardComponent extends Component {
       numberOfClientsFlag: 0
     };
   }
+  // screenshot = () => {
+  //   html2canvas(document.body).then(function(canvas) {
+  //     document.body.appendChild(canvas);
+  //     var imageType = 'image/png';
+  //     var imageData = canvas.toDataURL(imageType);
+  //     console.log(imageData);
+  //   });
+  // }
 
   componentDidMount() {
     socket.disconnect();
@@ -36,6 +45,9 @@ class DashboardComponent extends Component {
   }
 
   render() {
+    // if(this.state.performanceFlag) {
+    //   this.screenshot(); }
+
     console.log("After component did mount", this.state);
     return (
       <div className="app-container">

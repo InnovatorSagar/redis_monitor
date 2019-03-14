@@ -7,7 +7,7 @@ const initialState = {
       {
         type: "line",
         label: "Performance of System",
-        backgroundColor: "#BB40BF",
+        borderColor: "orange",
         borderWidth: "2",
         lineTension: 0.45,
         data: []
