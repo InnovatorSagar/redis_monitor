@@ -25,6 +25,8 @@ class DashboardComponent extends Component {
   // }
 
   componentDidMount() {
+    socket.disconnect();
+    socket.connect();
     socket.emit("startMonitoring");
     socket.on("get-data-for-blinking-notification",data=>{
       console.log(data);
