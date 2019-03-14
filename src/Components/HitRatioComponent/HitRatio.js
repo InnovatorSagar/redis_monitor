@@ -1,15 +1,15 @@
 import React, { Component } from "react";
-import { Bar } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 
-class Client extends Component {
+class HitRatio extends Component {
   render() {
     const { data, options, height } = this.props;
     return (
       <div>
-        <Bar data={data} options={options} height={height} />
+        <Line data={data} options={options} height={height} />
       </div>
     );
   }
 }
 
-export default Client;
+export default HitRatio;

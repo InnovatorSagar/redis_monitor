@@ -25,3 +25,13 @@
   align-self: center;
   color: white;
 }
+.config-btn {
+  height: 36px;
+  width: 160px;
+  border-radius: 4px;
+  border: 1px solid #000000;
+  text-align: center;
+  align-self: center;
+  margin-left: 10px;
+}
+
