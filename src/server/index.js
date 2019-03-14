@@ -9,7 +9,6 @@ const mongoClient = require("mongodb").MongoClient; //url on which the mongodb i
 const nodemailer = require("nodemailer");
 const moment = require("moment");
 var sendMailFlag = 0; //variable used for sending the mail only once
-<<<<<<< HEAD
 let blink = 1;
 var data = {
   metrics: {
@@ -28,10 +27,6 @@ var data = {
   }
 };
 const port = process.env.PORT || "4000";
-=======
-let blink =1;
-const port = process.env.PORT || 4000;
->>>>>>> cebf985c3017e3fa3715e8a3de062fca5290360d
 server.listen(port, () => {
   console.log(
     "Listening to port",
@@ -201,12 +196,7 @@ function sendMail(mailOptions) {
       console.log(error);
     } else {
       console.log("Email sent: " + info.response);
-<<<<<<< HEAD
       blink = 2;
-=======
-    //  sendMailFlag=0;
-    blink = 2;
->>>>>>> cebf985c3017e3fa3715e8a3de062fca5290360d
     }
   });
 }
@@ -334,28 +324,12 @@ function insertdataintoDateMetricDatabase(notifyData, callback) {
 
 //function to get the info of the redis database
 function getinfo(userData, socket) {
-<<<<<<< HEAD
   if (rclient == null) {
     rclient = redis.createClient({
       port: userData.port,
       host: userData.databaseHost,
       password: userData.databasePass
     });
-=======
-  console.log("user data",userData);
-  if (rclient === null) {
-    rclient = redis.createClient(userData.port, userData.databaseHost);
-    console.log(
-      "Server infor ports and ip ",
-      rclient.connection_options.port,
-      userData.port
-    );
-    console.log(
-      "Server infor ports and ip ",
-      rclient.connection_options.host,
-      userData.databaseHost
-    );
->>>>>>> cebf985c3017e3fa3715e8a3de062fca5290360d
   } else if (
     parseInt(userData.port) !== rclient.connection_options.port ||
     userData.databaseHost !== rclient.connection_options.host
@@ -377,26 +351,6 @@ function getinfo(userData, socket) {
   };
   let i = 1;
   setInterval(() => {
-<<<<<<< HEAD
-=======
-    var data = {
-      metrics: {
-        performanceData: rclient.server_info.used_cpu_sys,
-        numberOfClient: rclient.server_info.connected_clients,
-        maximumMemory: rclient.server_info.maxmemory,
-        usedMemory: rclient.server_info.used_memory,
-        keySpaceHit: rclient.server_info.keySpaceHit,
-        keySpaceMiss: rclient.server_info.keySpaceMiss
-      },
-      flags: {
-        performanceFlag: 1,
-        memoryFlag: 0,
-        numberOfClientsFlag: 0,
-        hitRatioFlag : 0
-      }
-    };
-
->>>>>>> cebf985c3017e3fa3715e8a3de062fca5290360d
     //data format of metric which is going to added in database
     rclient.info((req, res) => {
       res.split("\n").map(line => {
@@ -472,12 +426,7 @@ function getinfo(userData, socket) {
     }
 
     //insertng into the metric database
-<<<<<<< HEAD
     insertIntoMetricesDb(metrics, function(insert) {});
-=======
-    insertIntoMetricesDb(metrics, function(insert) {
-    });
->>>>>>> cebf985c3017e3fa3715e8a3de062fca5290360d
 
     //condition checking for checking the performance of cpu
     if (
@@ -486,22 +435,20 @@ function getinfo(userData, socket) {
       sendMailFlag == 0
     ) {
       data.flags.performanceFlag = 1;
-      console.log("p:,",data);
       var mailOptions = {
         from: "aloowalia22@gmail.com",
         to: userData.email,
         subject: "Performance Alert regarding redis database",
         text: "PERFORMANCE ALERT"
       };
-      sendMailFlag = 1;
       sendMail(mailOptions);
-      
+      sendMailFlag = 1;
     }
 
     //condition for checking the used memory by redis
     if (
       data.metrics.usedMemory > parseInt(userData.thresholdMemory) &&
-      sendMailFlag === 0
+      sendMailFlag == 0
     ) {
       data.flags.memoryFlag = 1;
       var mailOptions = {
@@ -510,18 +457,14 @@ function getinfo(userData, socket) {
         subject: "Memory Alert regarding redis database",
         text: "MEMORY ALERT"
       };
-      sendMailFlag = 1;
       sendMail(mailOptions);
-      
+      sendMailFlag = 1;
     }
     //condition for checking the no of clients alert
-    //console.log("Date: ",data);
-    //console.log("User Data ,",parseInt(userData.thresholdNoOfClients));
     if (
       data.metrics.numberOfClient > parseInt(userData.thresholdNoOfClients) &&
       sendMailFlag == 0
     ) {
-      //console.log("Ghusa : ",data);
       data.flags.numberOfClientsFlag = 1;
       var mailOptions = {
         from: "aloowalia22@gmail.com",
@@ -529,9 +472,8 @@ function getinfo(userData, socket) {
         subject: "No of Clients Alert regarding redis database",
         text: "NO OF CLIENTS ALERT"
       };
-      sendMailFlag = 1;
       sendMail(mailOptions);
-     //console.log("Client badh gye : ",data);
+      sendMailFlag = 1;
     }
 
     //condition for checking the hit ratio alert
@@ -551,8 +493,8 @@ function getinfo(userData, socket) {
         subject: "Hit Ratio Alert regarding redis database",
         text: "Hit Ratio ALERT"
       };
-      sendMailFlag = 1;
       sendMail(mailOptions);
+      sendMailFlag = 1;
     }
 
     //socket for sending the notify data to notification
@@ -562,15 +504,9 @@ function getinfo(userData, socket) {
       });
     });
 
-<<<<<<< HEAD
     //socket for sending data to blink notification
     if (sendMailFlag === 1 && blink === 2) {
       blink = 1;
-=======
-    if(sendMailFlag===1 && blink === 2)
-    { blink =1;
-      //console.log("Chal rha hu, jayega ye ",data);
->>>>>>> cebf985c3017e3fa3715e8a3de062fca5290360d
       socket.emit("get-data-for-blinking-notification", data.flags);
     }
     //socket for sending the real time data to dashboard
