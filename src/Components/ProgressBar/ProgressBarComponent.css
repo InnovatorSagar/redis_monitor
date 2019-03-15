@@ -6,3 +6,7 @@
     background-color: white;
     padding: 20px;
 }
+.progress-bar > section {
+    display: flex;
+    flex-direction: row;
+}

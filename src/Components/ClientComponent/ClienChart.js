@@ -3,9 +3,11 @@ import Client from "./Client";
 import "../Chart.css";
 import { socket } from "../../index";
 
+
 class ClientChart extends Component {
   constructor(props) {
     super(props);
+    
     this.state = {
       lineChartData: {
         labels: [],
@@ -21,7 +23,6 @@ class ClientChart extends Component {
         ]
       },
       lineChartOptions: {
-        zoomEnabled: true,
         responsive: true,
         maintainAspectRatio: false,
         scales: {
@@ -33,16 +34,24 @@ class ClientChart extends Component {
               }
             }
           ]
-        }
-      },
-      height: 160,
-      memory: null
-    };
-  }
+        },
+      // pan: {
+      //   enabled: true,
+      //   mode: 'xy'
+      // },
+      // zoom:{
+      //   enabled: true,
+      //   mode: 'xy'
+      // }
+    },
+    height: 160,
+    memory: null
+  };
+}
   change(d, u) {
     this.setState(prevState => ({
       max: u,
-      memory: d
+      memory: d,
     }));
   }
   componentDidMount() {
@@ -76,6 +85,7 @@ class ClientChart extends Component {
           data={this.state.lineChartData}
           options={this.state.lineChartOptions}
           height={this.state.height}
+          //zoom={this.state.zoom}
         />
       </div>
     );

@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "chart.js": "^2.7.3",
+    "chartjs-plugin-zoom": "^0.6.6",
     "express": "*",
     "html2canvas": "^1.0.0-alpha.12",
     "mongodb": "^3.1.13",
