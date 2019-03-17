@@ -9,6 +9,7 @@ import ClientChart from "./Components/ClientComponent/ClienChart";
 import MemoryChart from "./Components/MemoryComponent/MemoryChart";
 import DashboardComponent from "./Components/DashboardComponent/DashboardComponent";
 import FormComponent from "./Components/FormComonent/FormComponent";
+import FeedComponent from "./Components/FeedComponent/FeedComponent";
 let hashHistory = Router.hashHistory;
 class App extends Component {
   render() {
@@ -16,12 +17,13 @@ class App extends Component {
       <Provider store={store}>
         <Router history={hashHistory}>
           <div className="App">
-            <Route exact path="/" component={HomeComponent} />
+            <Route exact path="/" component={FeedComponent} />
             <Route exact path="/Memory" component={MemoryChart} />
             <Route exact path="/Client" component={ClientChart} />
             <Route exact path="/performance" component={ChangeValue} />
             <Route exact path="/dashboard" component={DashboardComponent} />
             <Route exact path="/Configure" component={FormComponent} />
+            <Route exact path="/feed" component={FeedComponent} />
           </div>
         </Router>
       </Provider>

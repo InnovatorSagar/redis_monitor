@@ -1,0 +1,36 @@
+import React, { Component } from "react";
+import HeaderComponent from "../HeaderComponent/HeaderComponent";
+import { Redirect } from "react-router-dom";
+import "./FeedComponent.css";
+import FeedCardComponent from "./FeedCardComponent/FeedCardComponent";
+
+class FeedComponent extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      master_slave_array: this.props.master_slave_array
+    };
+  }
+  render() {
+    if (this.state.master_slave_array) {
+      let arr = this.state.master_slave_array;
+      return (
+        <div className="feed-container">
+          <HeaderComponent heading="Feed" />
+          <h1>Welcome to your FEED</h1>
+          <div className="feed-container-cardcontainer">
+            <div className="grid">
+              {arr.map(res => {
+                console.log(res);
+                return <FeedCardComponent element={res} />;
+              })}
+            </div>
+          </div>
+        </div>
+      );
+    } else {
+      return <h3>Loading...</h3>;
+    }
+  }
+}
+export default FeedComponent;

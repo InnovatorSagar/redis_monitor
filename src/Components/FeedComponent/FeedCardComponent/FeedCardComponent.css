@@ -1,0 +1,16 @@
+.feed-card-cards {
+  display: flex;
+  flex-direction: column;
+  height: 200px;
+  width: 200px;
+  /*box-shadow: 2px 2px 2px 2px #888888;*/
+  border-radius: 4px;
+  padding: 5px 15px 15px 15px;
+  margin-bottom: 2em;
+  background-color: #ffffff;
+  text-align: left;
+}
+.feed-card-cards > hr {
+  border: 1px solid grey;
+  width: 100%;
+}

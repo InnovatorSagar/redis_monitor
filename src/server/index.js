@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
 const path = require("path");
-var cors = require("cors");
 const server = require("http").createServer(app);
 const io = require("socket.io")(server);
 const redis = require("redis");
@@ -9,7 +8,6 @@ const url = process.env.MONGOLAB_URI || "mongodb://localhost:27017/";
 const mongoClient = require("mongodb").MongoClient; //url on which the mongodb is giving services
 const nodemailer = require("nodemailer");
 const moment = require("moment");
-const bodyParser = require("body-parser");
 var sendMailFlag = 0; //variable used for sending the mail only once
 let blink = 1;
 var data = {
@@ -38,20 +36,15 @@ server.listen(port, () => {
   );
 });
 let rclient = null;
-app.use(cors());
 app.use(express.static(path.join(__dirname, "../../build")));
-app.use(bodyParser.json());
+
 //testing the server on index.html
 app.get("/", function(req, res) {
   res.sendFile(__dirname + "./index.html");
 });
 
 app.get("/port_address", function(req, res) {
-  return res.send();
-});
-console.log(__dirname);
-app.get("/*", function(req, res) {
-  res.sendFile(path.resolve(__dirname + "../../public/index.html"));
+  return res.send(process.env.PORT);
 });
 
 class Record {
@@ -63,14 +56,10 @@ class Record {
 
 //socket On when user connected to localhost 4000
 io.sockets.on("connection", function(socket) {
-  socket.setMaxListeners(50);
+  socket.setMaxListeners(0);
   //socket for saving the threshold values of the user config settings to mongodb
   socket.on("user-config", function(userConfig, callback) {
-    console.log(
-      userConfig.databasePass,
-      userConfig.port,
-      userConfig.databaseHost
-    );
+    var slaves = [];
     client = redis.createClient({
       port: userConfig.port,
       host: userConfig.databaseHost,
@@ -80,28 +69,48 @@ io.sockets.on("connection", function(socket) {
     client.on("error", function(err, res) {
       if (err) {
         console.log(err);
-        callback(false);
-        client.end();
+        callback(slaves);
+        client.end(false);
       }
     });
 
     client.on("ready", function(err, res) {
-      console.log(11111);
-      insertIntoUser(userConfig, function(res) {
-        if (res) callback(true);
-        else callback(false);
+      insertIntoUser(userConfig, function(res) {});
+
+      //first element will be the master
+      slaves.push({
+        id: 0,
+        port: parseInt(userConfig.port)
       });
-      client.end();
+
+      //checking for slaves
+      if (client.server_info.connected_slaves > 0) {
+        let i;
+        for (i = 0; i < client.server_info.connected_slaves; i++) {
+          console.log(
+            client["server_info"]["slave" + i.toString()]
+              .match(/port=\d+/i)[0]
+              .split("=")[1]
+          );
+          slaves.push({
+            id: i + 1,
+            port: parseInt(
+              client["server_info"]["slave" + i.toString()]
+                .match(/port=\d+/i)[0]
+                .split("=")[1]
+            )
+          });
+        }
+      }
+      //sending the list of slaves as callback
+      callback(slaves);
+      client.end(false);
     });
   });
 
   //socket for updating user configuration
   socket.on("update-user-config", function(userConfig, callback) {
-    console.log(
-      userConfig.databasePass,
-      userConfig.port,
-      userConfig.databaseHost
-    );
+    slaves = [];
     client = redis.createClient({
       port: userConfig.port,
       host: userConfig.databaseHost,
@@ -110,24 +119,52 @@ io.sockets.on("connection", function(socket) {
 
     client.on("error", function(err, res) {
       if (err) {
-        console.log("Auth error");
-        console.log(err);
-        callback(false);
-        client.end();
+        callback(slaves);
+        client.end(false);
       }
     });
 
     client.on("ready", function(err, res) {
-      updateUserConfig(userConfig, function(r) {
-        data.flags.performanceFlag = 0;
-        data.flags.hitRatioFlag = 0;
-        data.flags.memoryFlag = 0;
-        data.flags.numberOfClientsFlag = 0;
-        sendMailFlag = 0;
-        console.log("Sending response", r);
-        callback(r);
+      updateUserConfig(userConfig, function(res) {});
+
+      //first  element will be the master
+      slaves.push({
+        id: 0,
+        port: parseInt(userConfig.port)
       });
-      client.end();
+
+      //setting the flags value to 0
+      data.flags.performanceFlag = 0;
+      data.flags.hitRatioFlag = 0;
+      data.flags.memoryFlag = 0;
+      data.flags.numberOfClientsFlag = 0;
+
+      //checking for clients
+      if (client.server_info.connected_slaves > 0) {
+        let i;
+        for (i = 0; i < client.server_info.connected_slaves; i++) {
+          console.log(
+            client["server_info"]["slave" + i.toString()]
+              .match(/port=\d+/i)[0]
+              .split("=")[1]
+          );
+          slaves.push({
+            id: i + 1,
+            port: parseInt(
+              client["server_info"]["slave" + i.toString()]
+                .match(/port=\d+/i)[0]
+                .split("=")[1]
+            )
+          });
+        }
+      }
+
+      console.log(slaves);
+      //sending the list of slaves
+      callback(slaves);
+
+      //closing the client
+      client.end(false);
     });
   });
 
@@ -143,14 +180,10 @@ io.sockets.on("connection", function(socket) {
     countNoOfDocuments(callback);
   });
 
-  socket.on("disconnect", reason => {});
   //socket for starting the monitoring on the dashboard
-  socket.on("startMonitoring", () => {
+  socket.on("startMonitoring", (id, port) => {
     getUserData(function(thresholdValues) {
-      // if (dashboard_loading) {
-      getinfo(thresholdValues, socket);
-      dashboard_loading = false;
-      // }
+      getinfo(thresholdValues, id, port, socket);
     });
   });
 
@@ -237,30 +270,17 @@ function insertIntoUser(userConfig, fn) {
 function updateUserConfig(newUserConfig, callback) {
   mongoClient.connect(url, { useNewUrlParser: true }, function(err, user) {
     //connecting the mongoclient
-    if (err) {
-      callback(true);
-    }
-    console.log("Connected to mongodb");
+    if (err) throw err;
     var databaseObject = user.db("rdbalert");
     var newConfig = newUserConfig;
     databaseObject.collection("userconfig").drop();
     databaseObject
       .collection("userconfig")
       .insertOne(newConfig, function(err, res) {
-        if (err) {
-          console.log("sending ffalse");
-          callback(false);
-        } else {
-          console.log(res);
-          console.log("Database updation insrtedd");
+        if (err) callback(false);
+        else {
           callback(true);
           sendMailFlag = 0;
-          data.flags = {
-            performanceFlag: 0,
-            hitRatioFlag: 0,
-            numberOfClientsFlag: 0,
-            memoryFlag: 0
-          };
         }
         user.close();
       });
@@ -351,19 +371,19 @@ function insertdataintoDateMetricDatabase(notifyData, callback) {
 }
 
 //function to get the info of the redis database
-function getinfo(userData, socket) {
+function getinfo(userData, id, port, socket) {
   if (rclient == null) {
     rclient = redis.createClient({
-      port: userData.port,
+      port: port,
       host: userData.databaseHost,
       password: userData.databasePass
     });
   } else if (
-    parseInt(userData.port) !== rclient.connection_options.port ||
+    parseInt(port) !== rclient.connection_options.port ||
     userData.databaseHost !== rclient.connection_options.host
   ) {
     rclient = redis.createClient({
-      port: userData.port,
+      port: port,
       host: userData.databaseHost,
       password: userData.databasePass
     });
@@ -378,7 +398,6 @@ function getinfo(userData, socket) {
     maxHitRatio: 0
   };
   let i = 1;
-
   setInterval(() => {
     //data format of metric which is going to added in database
     rclient.info((req, res) => {
@@ -494,7 +513,6 @@ function getinfo(userData, socket) {
       data.metrics.numberOfClient > parseInt(userData.thresholdNoOfClients) &&
       sendMailFlag == 0
     ) {
-      console.log("NOC");
       data.flags.numberOfClientsFlag = 1;
       var mailOptions = {
         from: "aloowalia22@gmail.com",

@@ -2,14 +2,24 @@ import React, { Component } from "react";
 import Modal from "react-awesome-modal";
 import { Link } from "react-router-dom";
 import "./ModalComponent.css";
+import FeedComponent from "../FeedComponent/FeedComponent";
 
 class FormDataConfirmationModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      visible: true
+      visible: true,
+      redirect: false
     };
+
+    this.onClick = this.onClick.bind(this);
   }
+
+  onClick() {
+    this.setState({ redirect: true });
+    this.props.closeModal();
+  }
+
   componentWillReceiveProps(newProps) {
     if (newProps.variableInProps === this.props.variableInProps) {
       this.setState({
@@ -36,8 +46,12 @@ class FormDataConfirmationModal extends Component {
       content = " Your Threshold Configuration has been updated!!";
     }
 
-    const { visible, closeModal, sentData } = this.props;
+    const { visible, closeModal, sentData, master_slave_array } = this.props;
 
+    if (this.state.redirect) {
+      console.log("loading feeecomponent with ", master_slave_array);
+      return <FeedComponent master_slave_array={master_slave_array} />;
+    }
     return (
       <section>
         <Modal visible={visible} width="600" height="200" effect="fadeInUp">
@@ -45,15 +59,13 @@ class FormDataConfirmationModal extends Component {
           <hr />
           <p className="modalmssg">{content}</p>
           {sentData && (
-            <Link to="/dashboard">
-              <button
-                type="submit"
-                className="continuebutton"
-                onClick={closeModal}
-              >
-                {button}
-              </button>
-            </Link>
+            <button
+              type="submit"
+              className="continuebutton"
+              onClick={this.onClick}
+            >
+              {button}
+            </button>
           )}
           {!sentData && (
             <button
