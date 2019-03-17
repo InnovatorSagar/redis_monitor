@@ -28,6 +28,7 @@ class FormComponent extends Component {
   }
 
   closeModal = () => {
+    console.log("Closing modal");
     this.setState({ redirect: false });
   };
 
@@ -147,11 +148,9 @@ class FormComponent extends Component {
     });
   }
   render() {
-    console.log("Rendring after modal", this.state.master_slave_array);
-    console.log("redirect", this.state.sentData);
     let button = "Submit";
     if (this.state.haveData) button = "Update";
-    console.log("master_slave", this.state.master_slave_array);
+    console.log("Form state ", this.state);
     if (this.state.sentData && this.state.master_slave_array.length > 0) {
       return (
         <FormDataConfirmationModal

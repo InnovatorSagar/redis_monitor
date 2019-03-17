@@ -10,6 +10,7 @@ const nodemailer = require("nodemailer");
 const moment = require("moment");
 var sendMailFlag = 0; //variable used for sending the mail only once
 let blink = 1;
+let u = { port: null, host: null, password: null };
 var data = {
   metrics: {
     performanceData: 0,
@@ -76,7 +77,7 @@ io.sockets.on("connection", function(socket) {
 
     client.on("ready", function(err, res) {
       insertIntoUser(userConfig, function(res) {});
-
+      u = userConfig;
       //first element will be the master
       slaves.push({
         id: 0,
@@ -126,7 +127,7 @@ io.sockets.on("connection", function(socket) {
 
     client.on("ready", function(err, res) {
       updateUserConfig(userConfig, function(res) {});
-
+      u = userConfig;
       //first  element will be the master
       slaves.push({
         id: 0,
@@ -139,6 +140,57 @@ io.sockets.on("connection", function(socket) {
       data.flags.memoryFlag = 0;
       data.flags.numberOfClientsFlag = 0;
 
+      //checking for clients
+      if (client.server_info.connected_slaves > 0) {
+        let i;
+        for (i = 0; i < client.server_info.connected_slaves; i++) {
+          console.log(
+            client["server_info"]["slave" + i.toString()]
+              .match(/port=\d+/i)[0]
+              .split("=")[1]
+          );
+          slaves.push({
+            id: i + 1,
+            port: parseInt(
+              client["server_info"]["slave" + i.toString()]
+                .match(/port=\d+/i)[0]
+                .split("=")[1]
+            )
+          });
+        }
+      }
+
+      console.log(slaves);
+      //sending the list of slaves
+      callback(slaves);
+
+      //closing the client
+      client.end(false);
+    });
+  });
+
+  //returning number of slaves
+  socket.on("get-master-slave", function(callback) {
+    slaves = [];
+    client = redis.createClient({
+      port: u.port,
+      host: u.databaseHost,
+      password: u.databasePass
+    });
+
+    client.on("error", function(err, res) {
+      if (err) {
+        callback(slaves);
+        client.end(false);
+      }
+    });
+
+    client.on("ready", function(err, res) {
+      //first  element will be the master
+      slaves.push({
+        id: 0,
+        port: parseInt(u.port)
+      });
       //checking for clients
       if (client.server_info.connected_slaves > 0) {
         let i;

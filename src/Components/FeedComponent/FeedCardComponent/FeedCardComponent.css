@@ -1,8 +1,6 @@
 .feed-card-cards {
   display: flex;
   flex-direction: column;
-  height: 200px;
-  width: 200px;
   /*box-shadow: 2px 2px 2px 2px #888888;*/
   border-radius: 4px;
   padding: 5px 15px 15px 15px;

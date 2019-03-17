@@ -17,7 +17,7 @@ class App extends Component {
       <Provider store={store}>
         <Router history={hashHistory}>
           <div className="App">
-            <Route exact path="/" component={FeedComponent} />
+            <Route exact path="/" component={HomeComponent} />
             <Route exact path="/Memory" component={MemoryChart} />
             <Route exact path="/Client" component={ClientChart} />
             <Route exact path="/performance" component={ChangeValue} />

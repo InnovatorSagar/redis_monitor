@@ -8,15 +8,13 @@ class FormDataConfirmationModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      visible: true,
-      redirect: false
+      visible: true
     };
 
     this.onClick = this.onClick.bind(this);
   }
 
   onClick() {
-    this.setState({ redirect: true });
     this.props.closeModal();
   }
 
@@ -47,11 +45,6 @@ class FormDataConfirmationModal extends Component {
     }
 
     const { visible, closeModal, sentData, master_slave_array } = this.props;
-
-    if (this.state.redirect) {
-      console.log("loading feeecomponent with ", master_slave_array);
-      return <FeedComponent master_slave_array={master_slave_array} />;
-    }
     return (
       <section>
         <Modal visible={visible} width="600" height="200" effect="fadeInUp">
@@ -59,13 +52,15 @@ class FormDataConfirmationModal extends Component {
           <hr />
           <p className="modalmssg">{content}</p>
           {sentData && (
-            <button
-              type="submit"
-              className="continuebutton"
-              onClick={this.onClick}
-            >
-              {button}
-            </button>
+            <Link to="/feed">
+              <button
+                type="submit"
+                className="continuebutton"
+                onClick={this.onClick}
+              >
+                {button}
+              </button>
+            </Link>
           )}
           {!sentData && (
             <button

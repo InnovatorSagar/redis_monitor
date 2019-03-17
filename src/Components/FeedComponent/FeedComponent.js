@@ -3,16 +3,24 @@ import HeaderComponent from "../HeaderComponent/HeaderComponent";
 import { Redirect } from "react-router-dom";
 import "./FeedComponent.css";
 import FeedCardComponent from "./FeedCardComponent/FeedCardComponent";
+import { socket } from "../..";
 
 class FeedComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      master_slave_array: this.props.master_slave_array
+      master_slave_array: []
     };
   }
+
+  componentDidMount() {
+    socket.emit("get-master-slave", callback => {
+      this.setState({ master_slave_array: callback });
+    });
+  }
+
   render() {
-    if (this.state.master_slave_array) {
+    if (this.state.master_slave_array.length > 0) {
       let arr = this.state.master_slave_array;
       return (
         <div className="feed-container">
