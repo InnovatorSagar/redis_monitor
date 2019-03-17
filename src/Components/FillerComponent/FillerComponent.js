@@ -3,10 +3,10 @@ import './FillerComponent.css';
 
 class Filler extends Component {
     render() { 
-        const { percentage } = this.props;
+        const { percentage, color } = this.props;
         console.log(percentage);
         return (
-            <div className="filler" style={{ width: percentage }} />
+            <div className="filler" style={{ background: color, width: percentage }} />
         )
     }
 }
