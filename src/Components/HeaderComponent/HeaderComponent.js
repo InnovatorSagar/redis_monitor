@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "./Header.css";
 import { Redirect, Link } from "react-router-dom";
+import { socket } from "../..";
 const rdbAlertLogo = require("../../assets/logo_2.png");
 const user = require("../../assets/user.png");
 const home = require("../../assets/home.png");
@@ -18,7 +19,7 @@ class HeaderComponent extends Component {
   }
 
   userClick() {
-    this.setState({ userSettings: true });
+    this.setState({ userSettings: true }, () => {});
   }
   homeClick() {
     this.setState({ home: true });

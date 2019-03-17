@@ -12,7 +12,9 @@ class DashboardComponent extends Component {
       performanceFlag: 0,
       memoryFlag: 0,
       hitRatioFlag: 0,
-      numberOfClientsFlag: 0
+      numberOfClientsFlag: 0,
+      id: this.props.location.state.id,
+      port: this.props.location.state.port
     };
   }
   // screenshot = () => {
@@ -27,7 +29,8 @@ class DashboardComponent extends Component {
   componentDidMount() {
     socket.disconnect();
     socket.connect();
-    socket.emit("startMonitoring");
+    console.log(this.props.location.state.port);
+    socket.emit("startMonitoring", this.state.id, this.state.port);
     socket.on("get-data-for-blinking-notification", data => {
       console.log(data);
       this.setState(
