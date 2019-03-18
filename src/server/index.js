@@ -33,7 +33,7 @@ var data = {
 app.use(express.static(path.join(__dirname, "../../build")));
 
 //testing the server on index.html
-app.get("/", function(req, res) {
+app.get("*", function(req, res) {
   res.sendFile(__dirname + "./index.html");
 });
 class Record {
@@ -96,8 +96,8 @@ io.sockets.on("connection", function(socket) {
         data.flags.memoryFlag = 0;
         data.flags.numberOfClientsFlag = 0;
         sendMailFlag = 0;
-        console.log("updated flags to ", data.flags);
-        console.log("Updated user config", res);
+        // console.log("updated flags to ", data.flags);
+        // console.log("Updated user config", res);
         callback(true);
         client.end(false);
       });
@@ -362,7 +362,7 @@ function insertdataintoDateMetricDatabase(notifyData, callback) {
 
 //function to get the info of the redis database
 function getinfo(userData, id, port, socket) {
-  console.log(userData);
+  //console.log(userData);
   if (rclient === null) {
     rclient = redis.createClient({
       port: port,
@@ -390,7 +390,7 @@ function getinfo(userData, id, port, socket) {
   };
   let i = 1;
   infoInterval = setInterval(() => {
-    console.log("SENDMAIFLAG : ", sendMailFlag);
+    //console.log("SENDMAIFLAG : ", sendMailFlag);
     //data format of metric which is going to added in database
     rclient.info((req, res) => {
       res.split("\n").map(line => {
@@ -465,57 +465,44 @@ function getinfo(userData, id, port, socket) {
     //insertng into the metric database
     insertIntoMetricesDb(metrics, function(insert) {});
 
+    var mailOptions = {
+      from: "aloowalia22@gmail.com",
+      to: userData.email,
+      subject: "ALERT FROM RDBALERT",
+      text: "Hi "+userData.name+" ,\n\n\n"
+    };
+
+    var mailFlag=0;
+
     //condition checking for checking the performance of cpu
     if (
       data.metrics.performanceData >
-        parseInt(userData.thresholdCpuPerformance) && sendMailFlag === 0
+        parseInt(userData.thresholdCpuPerformance)
     ) {
       data.flags.performanceFlag = 1;
-      var mailOptions = {
-        from: "aloowalia22@gmail.com",
-        to: userData.email,
-        subject: "Performance Alert regarding redis database",
-        text: "PERFORMANCE ALERT "+"\n Threshold Performance Data : "+userData.thresholdCpuPerformance
-        +" \n Performance Data : "+data.metrics.performanceData
-      };
-      sendMailFlag = 1;
-      sendMail(mailOptions);
+        mailOptions.text += "PERFORMANCE ALERT "+"\n Threshold Performance Data : "+userData.thresholdCpuPerformance
+        +" \nPerformance Data : "+data.metrics.performanceData+"\n"
+      mailFlag=1;
     }
 
     //condition for checking the used memory by redis
     if (
-      data.metrics.usedMemory > parseInt(userData.thresholdMemory) && sendMailFlag === 0
+      data.metrics.usedMemory > parseInt(userData.thresholdMemory)
     ) {
       data.flags.memoryFlag = 1;
-      var mailOptions = {
-        from: "aloowalia22@gmail.com",
-        to: userData.email,
-        subject: "Memory Alert regarding redis database",
-        text: "MEMORY ALERT"+"\n Threshold Memory : "+userData.thresholdMemory
-        +" \n UsedMemory : "+data.metrics.usedMemory
-      };
-      sendMailFlag = 1;
-      sendMail(mailOptions);
+      mailOptions.text+="MEMORY ALERT "+"\nThreshold Memory : "+userData.thresholdMemory
+        +"\n UsedMemory : "+data.metrics.usedMemory+"\n"
+      mailFlag=1; 
     }
-    console.log(
-      "THREDIHSLFUBVIYKGJLKBHMFGCXFY : ",
-      data.metrics.numberOfClient,
-      userData.thresholdNoOfClients
-    );
+
     //condition for checking the no of clients alert
     if (
-      data.metrics.numberOfClient > parseInt(userData.thresholdNoOfClients) && sendMailFlag === 0
+      data.metrics.numberOfClient > parseInt(userData.thresholdNoOfClients)
     ) {
       data.flags.numberOfClientsFlag = 1;
-      var mailOptions = {
-        from: "aloowalia22@gmail.com",
-        to: userData.email,
-        subject:"No of Clients Alert regarding redis database", 
-        text: "NO OF CLIENTS ALERT"+"\n Threshold No Of Clients : "+userData.thresholdNoOfClients
-        +" \n No Of Clients : "+data.metrics.numberOfClient
-      };
-      sendMailFlag = 1;
-      sendMail(mailOptions);
+      mailOptions.text+="NO OF CLIENTS ALERT "+"\nThreshold No Of Clients : "+userData.thresholdNoOfClients
+        +"\nNo Of Clients : "+data.metrics.numberOfClient+"\n"
+      mailFlag=1;
     }
 
     //condition for checking the hit ratio alert
@@ -524,20 +511,19 @@ function getinfo(userData, id, port, socket) {
         data.metrics.keySpaceHit /
           (data.metrics.keySpaceHit + data.metrics.keySpaceMiss) >=
           1) ||
-      (data.metrics.keySpaceHit > 0 && sendMailFlag === 0 &&
+      (data.metrics.keySpaceHit > 0 &&
         data.metrics.keySpaceHit /
           (data.metrics.keySpaceHit + data.metrics.keySpaceMiss) <
           parseInt(userData.thresholdHitRatio))) {
       data.flags.hitRatioFlag = 1;
-      var mailOptions = {
-        from: "aloowalia22@gmail.com",
-        to: userData.email,
-        subject: "Hit Ratio Alert regarding redis database",
-        text: "Hit Ratio Alert "+"\n Threshold Hit Ratio : "+userData.thresholdHitRatio
-        +" \n Hitratio : "+data.metrics.hitRatio
-      };
-      sendMailFlag = 1;
+      mailOptions.text+="Hit Ratio Alert "+"\nThreshold Hit Ratio : "+userData.thresholdHitRatio
+        +" \nHitratio : "+data.metrics.hitRatio
+      mailFlag=1;
+    }
+
+    if(sendMailFlag === 0 && mailFlag === 1){
       sendMail(mailOptions);
+      sendMailFlag=1;
     }
 
     //socket for sending the notify data to notification
@@ -550,7 +536,7 @@ function getinfo(userData, id, port, socket) {
     //socket for sending data to blink notification
     if (sendMailFlag === 1 && blink === 2) {
       blink = 1;
-      console.log("Emmitting blinking event");
+      //console.log("Emmitting blinking event");
       socket.emit("get-data-for-blinking-notification", data.flags);
     }
     //socket for sending the real time data to dashboard
