@@ -9,6 +9,10 @@ class DashboardComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      prevperformanceFlag: 0,
+      prevmemoryFlag: 0,
+      prevhitRatioFlag: 0,
+      prevnumberOfClientsFlag: 0,
       performanceFlag: 0,
       memoryFlag: 0,
       hitRatioFlag: 0,
@@ -17,15 +21,6 @@ class DashboardComponent extends Component {
       port: this.props.location.state.port
     };
   }
-  // screenshot = () => {
-  //   html2canvas(document.body).then(function(canvas) {
-  //     document.body.appendChild(canvas);
-  //     var imageType = 'image/png';
-  //     var imageData = canvas.toDataURL(imageType);
-  //     console.log(imageData);
-  //   });
-  // }
-
   componentWillUnmount() {
     socket.disconnect();
     socket.connect();
@@ -37,17 +32,24 @@ class DashboardComponent extends Component {
     socket.emit("startMonitoring", this.state.id, this.state.port);
     socket.on("get-data-for-blinking-notification", data => {
       console.log("Blinking even", data);
+      if(this.state.prevperformanceFlag !== data.performanceFlag || this.state.prevmemoryFlag !== data.memoryFlag ||
+        this.state.prevnumberOfClientsFlag !== data.numberOfClientsFlag || this.state.prevhitRatioFlag !== data.hitRatioFlag) {
       this.setState(
         {
           performanceFlag: data.performanceFlag,
           hitRatioFlag: data.hitRatioFlag,
           numberOfClientsFlag: data.numberOfClientsFlag,
-          memoryFlag: data.memoryFlag
+          memoryFlag: data.memoryFlag,
+          prevperformanceFlag: data.performanceFlag,
+          prevhitRatioFlag: data.hitRatioFlag,
+          prevnumberOfClientsFlag: data.numberOfClientsFlag,
+          prevmemoryFlag: data.memoryFlag
         },
         () => {
           console.log(this.state);
         }
       );
+      }
     });
   }
 

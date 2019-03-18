@@ -11,7 +11,7 @@ class FormComponent extends Component {
     this.state = {
       name: "",
       email: "",
-      thersholdMemory: "",
+      thresholdMemory: "",
       thresholdCpuPerformance: "",
       thresholdNoOfClients: "",
       hitratiometric: "",
@@ -38,7 +38,7 @@ class FormComponent extends Component {
     let res = true;
     if (
       this.state.name === "" ||
-      this.state.thersholdMemor === "" ||
+      this.state.thresholdMemory === "" ||
       this.state.thresholdCpuPerformance === "" ||
       this.state.thresholdNoOfClients === "" ||
       this.state.hitratiometric === "" ||
@@ -78,7 +78,7 @@ class FormComponent extends Component {
       const data = {
         name: this.state.name,
         email: this.state.email,
-        thersholdMemory: this.state.thersholdMemory,
+        thresholdMemory: this.state.thresholdMemory,
         thresholdCpuPerformance: this.state.thresholdCpuPerformance,
         thresholdNoOfClients: this.state.thresholdNoOfClients,
         organization: this.state.organization,
@@ -126,7 +126,7 @@ class FormComponent extends Component {
         this.setState({
           name: callback.name,
           email: callback.email,
-          thersholdMemory: callback.thersholdMemory,
+          thresholdMemory: callback.thresholdMemory,
           thresholdCpuPerformance: callback.thresholdCpuPerformance,
           thresholdNoOfClients: callback.thresholdNoOfClients,
           hitratiometric: callback.thresholdHitRatio,
@@ -241,8 +241,8 @@ class FormComponent extends Component {
                 type="text"
                 className="inputfield"
                 placeholder="Set Memory Limit(Bytes)"
-                name="thersholdMemory"
-                value={this.state.thersholdMemory}
+                name="thresholdMemory"
+                value={this.state.thresholdMemory}
                 onChange={e => this.handleChange(e)}
                 required
               />
