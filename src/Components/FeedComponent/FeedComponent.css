@@ -3,12 +3,11 @@
   flex-direction: column;
   padding: 0px 60px 15px 60px;
   border: 3px;
-  background-color: #292842;
+  background-color: #E9EAEF;
 }
 .feed-container > h1 {
   text-align: left;
   margin-left: 1em;
-  color: white;
 }
 
 .feed-container-cardcontainer {
@@ -23,7 +22,7 @@
   width: 100%;
 }
 .feed-container > hr {
-  border: 1px solid white;
+  border: 1px solid black;
   margin-bottom: 2em;
   width: 100%;
 }
