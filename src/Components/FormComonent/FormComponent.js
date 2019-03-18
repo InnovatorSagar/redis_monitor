@@ -22,8 +22,7 @@ class FormComponent extends Component {
       redirect: false,
       sentData: false,
       haveData: false,
-      error_wala: false,
-      master_slave_array: []
+      error_wala: false
     };
   }
 
@@ -60,12 +59,6 @@ class FormComponent extends Component {
       this.setState({ error_wala: true });
       res = false;
     }
-
-    // console.log("threshold memory", thersholdMemoryVar);
-    // if(parseInt(thersholdMemoryVar) > this.state.thersholdMemory) {
-    //   this.setState({ thersholdMemory: "" });
-    //   res = false;
-    // }
     return res;
   };
 
@@ -75,6 +68,8 @@ class FormComponent extends Component {
   };
 
   handleSubmit = event => {
+    // socket.disconnect();
+    // socket.connect();
     event.preventDefault();
     const res = this.validate();
     this.setState({ redirect: true });
@@ -96,7 +91,7 @@ class FormComponent extends Component {
       if (this.state.haveData) {
         socket.emit("update-user-config", data, callback => {
           console.log("Callback recieved is ", callback);
-          if (callback.length === 0) {
+          if (!callback) {
             this.setState(
               {
                 error_wala: true,
@@ -107,12 +102,11 @@ class FormComponent extends Component {
               }
             );
           }
-          if (callback.length > 0) {
+          if (callback) {
             this.setState(
               {
                 sentData: true,
-                error_wala: false,
-                master_slave_array: callback
+                error_wala: false
               },
               () => {
                 console.log("Changed state ", this.state);
@@ -122,12 +116,10 @@ class FormComponent extends Component {
         });
       } else
         socket.emit("user-config", data, callback => {
-          if (callback)
-            this.setState({ sentData: true, master_slave_array: callback });
+          if (callback) this.setState({ sentData: true });
         });
     }
   };
-
   componentDidMount() {
     socket.emit("get-user-data", callback => {
       if (callback != null) {
@@ -151,166 +143,163 @@ class FormComponent extends Component {
     let button = "Submit";
     if (this.state.haveData) button = "Update";
     console.log("Form state ", this.state);
-    if (this.state.sentData && this.state.master_slave_array.length > 0) {
-      return (
-        <FormDataConfirmationModal
-          visible={this.state.redirect}
-          closeModal={this.closeModal}
-          sentData={this.state.sentData}
-          haveData={this.state.haveData}
-          master_slave_array={this.state.master_slave_array}
-        />
-      );
-    } else
-      return (
-        <div className="form-container">
-          {this.state.error_wala && (
-            <FormDataConfirmationModal
-              visible={this.state.redirect}
-              closeModal={this.closeModal}
-              sentData={this.state.sentData}
-              haveData={this.state.haveData}
-            />
-          )}
-          <HeaderComponent heading="Database Configurations" />
-          <h3>DATABASE CONFIGURATIONS</h3>
-          <hr />
-          <div className="form">
-            <p className="alignPersonalText">Personal Information</p>
-            <form onSubmit={e => this.handleSubmit(e)}>
-              <section>
-                <p className="alignInputText">Name:</p>
-                <input
-                  type="text"
-                  className="inputfield"
-                  name="name"
-                  value={this.state.name}
-                  onChange={e => this.handleChange(e)}
-                  required
-                />
-              </section>
-              <section>
-                <p className="alignInputText">Email:</p>
-                <input
-                  type="text"
-                  className="inputfield"
-                  name="email"
-                  value={this.state.email}
-                  onChange={e => this.handleChange(e)}
-                  required
-                />
-              </section>
-              <section>
-                <p className="alignInputText">Organisation:</p>
-                <input
-                  type="text"
-                  className="inputfield"
-                  name="organization"
-                  value={this.state.organization}
-                  onChange={e => this.handleChange(e)}
-                  required
-                />
-              </section>
-              <p className="alignDatabaseText">Redis-Server Information</p>
-              <section>
-                <p className="alignInputText">Port:</p>
-                <input
-                  type="text"
-                  className="inputfield"
-                  name="port"
-                  value={this.state.port}
-                  onChange={e => this.handleChange(e)}
-                  required
-                />
-              </section>
-              <section>
-                <p className="alignInputText">Password:</p>
-                <input
-                  type="password"
-                  className="inputfield"
-                  name="databasePass"
-                  value={this.state.databasePass}
-                  onChange={e => this.handleChange(e)}
-                  required
-                />
-              </section>
-              <section>
-                <p className="alignInputText">IP Address/ URL:</p>
-                <input
-                  type="text"
-                  className="inputfield"
-                  name="databaseHost"
-                  value={this.state.databaseHost}
-                  onChange={e => this.handleChange(e)}
-                  required
-                />
-              </section>
-              <section>
-                <p className="alignInputText">Memory Threshold:</p>
-                <input
-                  type="text"
-                  className="inputfield"
-                  placeholder="Set Memory Limit(Bytes)"
-                  name="thersholdMemory"
-                  value={this.state.thersholdMemory}
-                  onChange={e => this.handleChange(e)}
-                  required
-                />
-              </section>
-              <section>
-                <p className="alignInputText">Number of Clients</p>
-                <input
-                  type="text"
-                  className="inputfield"
-                  placeholder="Set Limit of Clients"
-                  name="thresholdNoOfClients"
-                  value={this.state.thresholdNoOfClients}
-                  onChange={e => this.handleChange(e)}
-                  required
-                />
-              </section>
-              <section>
-                <p className="alignInputText">Performance Requirement</p>
-                <input
-                  type="text"
-                  className="inputfield"
-                  placeholder="Enter minimum Performance Required in Percent"
-                  name="thresholdCpuPerformance"
-                  value={this.state.thresholdCpuPerformance}
-                  onChange={e => this.handleChange(e)}
-                  required
-                />
-              </section>
-              <section>
-                <p className="alignInputText">Hit Ratio</p>
-                <input
-                  type="text"
-                  className="inputfield"
-                  placeholder="Enter minimum Hit Ratio"
-                  name="hitratiometric"
-                  value={this.state.hitratiometric}
-                  onChange={e => this.handleChange(e)}
-                  required
-                />
-              </section>
-              <section>
-                <Link to="/">
-                  <button className="cancel-btn" type="secondary">
-                    Cancel
-                  </button>
-                </Link>
-                <button
-                  className="submit-btn"
-                  type="submit"
-                  onClick={this.handleSubmit}
-                >
-                  {button} >
+    return (
+      <div className="form-container">
+        {this.state.sentData && (
+          <FormDataConfirmationModal
+            visible={this.state.redirect}
+            closeModal={this.closeModal}
+            sentData={this.state.sentData}
+            haveData={this.state.haveData}
+          />
+        )}
+        {this.state.error_wala && (
+          <FormDataConfirmationModal
+            visible={this.state.redirect}
+            closeModal={this.closeModal}
+            sentData={this.state.sentData}
+            haveData={this.state.haveData}
+          />
+        )}
+        <HeaderComponent heading="Database Configurations" />
+        <h3>DATABASE CONFIGURATIONS</h3>
+        <hr />
+        <div className="form">
+          <p className="alignPersonalText">Personal Information</p>
+          <form onSubmit={e => this.handleSubmit(e)}>
+            <section>
+              <p className="alignInputText">Name:</p>
+              <input
+                type="text"
+                className="inputfield"
+                name="name"
+                value={this.state.name}
+                onChange={e => this.handleChange(e)}
+                required
+              />
+            </section>
+            <section>
+              <p className="alignInputText">Email:</p>
+              <input
+                type="text"
+                className="inputfield"
+                name="email"
+                value={this.state.email}
+                onChange={e => this.handleChange(e)}
+                required
+              />
+            </section>
+            <section>
+              <p className="alignInputText">Organisation:</p>
+              <input
+                type="text"
+                className="inputfield"
+                name="organization"
+                value={this.state.organization}
+                onChange={e => this.handleChange(e)}
+                required
+              />
+            </section>
+            <p className="alignDatabaseText">Redis-Server Information</p>
+            <section>
+              <p className="alignInputText">Port:</p>
+              <input
+                type="text"
+                className="inputfield"
+                name="port"
+                value={this.state.port}
+                onChange={e => this.handleChange(e)}
+                required
+              />
+            </section>
+            <section>
+              <p className="alignInputText">Password:</p>
+              <input
+                type="password"
+                className="inputfield"
+                name="databasePass"
+                value={this.state.databasePass}
+                onChange={e => this.handleChange(e)}
+                required
+              />
+            </section>
+            <section>
+              <p className="alignInputText">IP Address/ URL:</p>
+              <input
+                type="text"
+                className="inputfield"
+                name="databaseHost"
+                value={this.state.databaseHost}
+                onChange={e => this.handleChange(e)}
+                required
+              />
+            </section>
+            <section>
+              <p className="alignInputText">Memory Threshold:</p>
+              <input
+                type="text"
+                className="inputfield"
+                placeholder="Set Memory Limit(Bytes)"
+                name="thersholdMemory"
+                value={this.state.thersholdMemory}
+                onChange={e => this.handleChange(e)}
+                required
+              />
+            </section>
+            <section>
+              <p className="alignInputText">Number of Clients</p>
+              <input
+                type="text"
+                className="inputfield"
+                placeholder="Set Limit of Clients"
+                name="thresholdNoOfClients"
+                value={this.state.thresholdNoOfClients}
+                onChange={e => this.handleChange(e)}
+                required
+              />
+            </section>
+            <section>
+              <p className="alignInputText">Performance Requirement</p>
+              <input
+                type="text"
+                className="inputfield"
+                placeholder="Enter minimum Performance Required in Percent"
+                name="thresholdCpuPerformance"
+                value={this.state.thresholdCpuPerformance}
+                onChange={e => this.handleChange(e)}
+                required
+              />
+            </section>
+            <section>
+              <p className="alignInputText">Hit Ratio</p>
+              <input
+                type="text"
+                className="inputfield"
+                placeholder="Enter minimum Hit Ratio"
+                name="hitratiometric"
+                value={this.state.hitratiometric}
+                onChange={e => this.handleChange(e)}
+                required
+              />
+            </section>
+            <section>
+              <Link to="/">
+                <button className="cancel-btn" type="secondary">
+                  Cancel
                 </button>
-              </section>
-            </form>
-          </div>
+              </Link>
+              <button
+                className="submit-btn"
+                type="submit"
+                onClick={this.handleSubmit}
+              >
+                {button} >
+              </button>
+            </section>
+          </form>
         </div>
-      );
+      </div>
+    );
   }
 }
 export default FormComponent;

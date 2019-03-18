@@ -14,6 +14,8 @@ class FeedComponent extends Component {
   }
 
   componentDidMount() {
+    socket.disconnect();
+    socket.connect();
     socket.emit("get-master-slave", callback => {
       this.setState({ master_slave_array: callback });
     });

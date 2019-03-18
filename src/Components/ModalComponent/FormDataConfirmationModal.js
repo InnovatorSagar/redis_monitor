@@ -44,7 +44,7 @@ class FormDataConfirmationModal extends Component {
       content = " Your Threshold Configuration has been updated!!";
     }
 
-    const { visible, closeModal, sentData, master_slave_array } = this.props;
+    const { visible, closeModal, sentData } = this.props;
     return (
       <section>
         <Modal visible={visible} width="600" height="200" effect="fadeInUp">
