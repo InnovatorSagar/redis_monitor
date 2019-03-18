@@ -485,6 +485,8 @@ function getinfo(userData, id, port, socket) {
       mailFlag=1;
     }
 
+    //console.log(data.metrics.usedMemory,userData.thresholdMemory)
+
     //condition for checking the used memory by redis
     if (
       data.metrics.usedMemory > parseInt(userData.thresholdMemory)
@@ -522,6 +524,7 @@ function getinfo(userData, id, port, socket) {
     }
 
     if(sendMailFlag === 0 && mailFlag === 1){
+      mailOptions.text+="\nRegards,\nRDBAlert Team"
       sendMail(mailOptions);
       sendMailFlag=1;
     }
@@ -536,7 +539,7 @@ function getinfo(userData, id, port, socket) {
     //socket for sending data to blink notification
     if (sendMailFlag === 1 && blink === 2) {
       blink = 1;
-      //console.log("Emmitting blinking event");
+      console.log("Emmitting blinking event");
       socket.emit("get-data-for-blinking-notification", data.flags);
     }
     //socket for sending the real time data to dashboard
