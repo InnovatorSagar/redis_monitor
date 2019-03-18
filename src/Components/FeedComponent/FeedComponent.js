@@ -28,7 +28,7 @@ class FeedComponent extends Component {
           <h1>Welcome to your FEED</h1>
           <hr />
           <div className="feed-container-cardcontainer">
-            <div className="grid">
+            <div className="slave-grid">
               {arr.map(res => {
                 return (
                   <div>
