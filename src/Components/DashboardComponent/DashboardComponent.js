@@ -57,8 +57,9 @@ class DashboardComponent extends Component {
 
     console.log("After component did mount", this.state);
     return (
-      <div className="app-container">
+      <div>
         <HeaderComponent heading="Dashboard" />
+        <div className="app-container">
         <h1>Welcome To Database Monitoring</h1>
         <hr />
         <div className="upper-cards">
@@ -81,6 +82,7 @@ class DashboardComponent extends Component {
             notify={this.state.hitRatioFlag}
           />
         </div>
+      </div>
       </div>
     );
   }

@@ -3,12 +3,11 @@
   flex-direction: column;
   padding: 0px 60px 15px 60px;
   border: 3px;
-  background-color: #292842;
+  background-color: #E9EAEF;
 }
 
 .app-container > h1 {
   align-self: flex-start;
-  color: white;
 }
 
 .app-container > hr {
@@ -19,5 +18,5 @@
 .app-container > .upper-cards {
   display: flex;
   justify-content: flex-start;
-  padding-left: 70px;
+  padding-left: 35px;
 }

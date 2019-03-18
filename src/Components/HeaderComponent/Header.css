@@ -2,7 +2,6 @@
   display: flex;
   justify-content: space-between;
   padding: 10px 10px 0px 10px;
-  margin: 0px 15px 0px 15px;
   background-color: white;
 }
 
@@ -14,20 +13,75 @@
 .header > h3 {
   margin-top: 4px;
 }
-
-.header > button {
+.buttons {
+  display: flex;
+  flex-direction: row;
+}
+.user-btn {
+  display: flex;
+  margin: 0px 0px 6px 6px;
+  border: 1px solid;
+  border-radius: 3px;
+  background-color: white;
+  height: 40px;
+  width: 140px;
+}
+.user-btn > img {
+  padding: 4px;
+  height: 40%;
+  width: 15%;
+}
+.user-btn > p {
+  margin-top: 6px;
+  margin-left: 2px;
+  padding: 0em;
+  text-align: center;
+  margin-bottom: 0px;
+}
+.feed-btn {
   display: flex;
   margin: 0px 0px 6px 0px;
   border: 1px solid;
   border-radius: 3px;
   background-color: white;
-  height: 10%;
-  width: 10%;
+  height: 40px;
+  width: 80px;
 }
-
-.header > button > img {
+.feed-btn > img {
   padding: 4px;
-  /* background-color: white; */
+  height: 45%;
+  width: 25%;
+}
+.feed-btn > p {
+  margin-top: 6px;
+  margin-left: 2px;
+  padding: 0em;
+  text-align: center;
+  margin-bottom: 0px;
+}
+.home-btn {
+  display: flex;
+  margin: 0px 0px 6px 0px;
+  border: 1px solid;
+  border-radius: 3px;
+  background-color: white;
+  height: 40px;
+  width: 100px;
+}
+.home-btn > img {
+  padding: 4px;
+  height: 40%;
+  width: 25%;
+}
+.home-btn > p {
+  margin-top: 6px;
+  margin-left: 2px;
+  padding: 0em;
+  text-align: center;
+  margin-bottom: 0px;
+}
+/* .header > button > img {
+  padding: 4px;
   height: 30%;
   width: 15%;
 }
@@ -35,4 +89,4 @@
   margin-top: 9px;
   padding: 0em;
   margin-bottom: 0px;
-}
+} */

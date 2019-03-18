@@ -25,8 +25,9 @@ class FeedComponent extends Component {
     if (this.state.master_slave_array.length > 0) {
       let arr = this.state.master_slave_array;
       return (
-        <div className="feed-container">
+        <div>
           <HeaderComponent heading="Feed" />
+          <div className="feed-container">
           <h1>Welcome to your FEED</h1>
           <hr />
           <div className="feed-container-cardcontainer">
@@ -35,12 +36,12 @@ class FeedComponent extends Component {
                 return (
                   <div>
                     <FeedCardComponent element={res} />
-                    {res.id === 0 && <hr />}
                   </div>
                 );
               })}
             </div>
           </div>
+        </div>
         </div>
       );
     } else {

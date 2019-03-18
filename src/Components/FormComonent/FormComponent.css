@@ -2,19 +2,18 @@
   display: flex;
   flex-direction: column;
   padding: 0px 10px 10px 10px;
-  background-color: #292842;;
+  background-color: #E9EAEF;
 }
 .form-container > h3 {
   display: flex;
   align-self: flex-start;
   font-weight: normal;
   text-align: left;
-  color: white;
   margin-left: 70px;
 }
 
 .form-container > hr {
-  border: 1px solid white;
+  border: 1px solid black;
   width: 90%;
 }
 .alignPersonalText {

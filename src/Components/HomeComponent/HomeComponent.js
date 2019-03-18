@@ -33,7 +33,7 @@ class HomeComponent extends Component {
   }
   render() {
     if (this.state.rdbConfiguration) return <Redirect to="/Configure" />;
-    if (this.state.dashboard) return <Redirect to="/dashboard" />;
+    if (this.state.dashboard) return <Redirect to="/feed" />;
     return (
       <div className="app-contain">
         {this.state.openModal && <ModalComponent />}

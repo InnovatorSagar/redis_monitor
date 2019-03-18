@@ -144,7 +144,7 @@ class FormComponent extends Component {
     if (this.state.haveData) button = "Update";
     console.log("Form state ", this.state);
     return (
-      <div className="form-container">
+      <div>
         {this.state.sentData && (
           <FormDataConfirmationModal
             visible={this.state.redirect}
@@ -162,6 +162,7 @@ class FormComponent extends Component {
           />
         )}
         <HeaderComponent heading="Database Configurations" />
+        <div className="form-container">
         <h3>DATABASE CONFIGURATIONS</h3>
         <hr />
         <div className="form">
@@ -298,6 +299,7 @@ class FormComponent extends Component {
             </section>
           </form>
         </div>
+      </div>
       </div>
     );
   }
