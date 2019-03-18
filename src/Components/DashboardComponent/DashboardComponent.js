@@ -17,14 +17,6 @@ class DashboardComponent extends Component {
       port: this.props.location.state.port
     };
   }
-  // screenshot = () => {
-  //   html2canvas(document.body).then(function(canvas) {
-  //     document.body.appendChild(canvas);
-  //     var imageType = 'image/png';
-  //     var imageData = canvas.toDataURL(imageType);
-  //     console.log(imageData);
-  //   });
-  // }
 
   componentWillUnmount() {
     socket.disconnect();

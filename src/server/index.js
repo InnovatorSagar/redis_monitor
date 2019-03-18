@@ -49,7 +49,7 @@ io.sockets.on("connection", function(socket) {
   
   //socket for saving the threshold values of the user config settings to mongodb
   socket.on("user-config", function(userConfig, callback) {
-    client = redis.createClient({
+   var client = redis.createClient({
       port: userConfig.port,
       host: userConfig.databaseHost,
       password: userConfig.databasePass
@@ -74,7 +74,7 @@ io.sockets.on("connection", function(socket) {
 
   //socket for updating user configuration
   socket.on("update-user-config", function(userConfig, callback) {
-    client = redis.createClient({
+   var client = redis.createClient({
       port: userConfig.port,
       host: userConfig.databaseHost,
       password: userConfig.databasePass
@@ -106,8 +106,8 @@ io.sockets.on("connection", function(socket) {
 
   //returning number of slaves
   socket.on("get-master-slave", function(callback) {
-    slaves = [];
-    client = redis.createClient({
+   var slaves = [];
+   var client = redis.createClient({
       port: u.port,
       host: u.databaseHost,
       password: u.databasePass
@@ -473,6 +473,14 @@ function getinfo(userData, id, port, socket) {
     };
 
     var mailFlag=0;
+    var mailOptions = {
+      from: "aloowalia22@gmail.com",
+      to: userData.email,
+      subject: "ALERT FROM RDBALERT",
+      text: "Hi "+userData.name+" ,\n\n\n"
+    };
+
+    var mailFlag=0;
 
     //condition checking for checking the performance of cpu
     if (
@@ -538,8 +546,6 @@ function getinfo(userData, id, port, socket) {
 
     //socket for sending data to blink notification
     if (sendMailFlag === 1 && blink === 2) {
-      blink = 1;
-      console.log("Emmitting blinking event");
       socket.emit("get-data-for-blinking-notification", data.flags);
     }
     //socket for sending the real time data to dashboard
