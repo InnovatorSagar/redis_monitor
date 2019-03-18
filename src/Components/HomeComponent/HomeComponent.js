@@ -58,7 +58,7 @@ class HomeComponent extends Component {
               className="dashboard-btn"
               onClick={this.dashboard}
             >
-              DASHBOARD
+              FEED
             </button>
           </div>
         </div>

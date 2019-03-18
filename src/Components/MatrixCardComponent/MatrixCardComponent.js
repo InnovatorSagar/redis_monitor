@@ -29,16 +29,9 @@ class MatrixCardComponent extends Component {
   blinkbutton = notify => {
     if (notify === 1) {
       setTimeout(() => {
-        this.setState({ blink: !this.state.blink });
-      }, 1000);
-    }
-    return this.state.blink;
-  };
-
-  blinkbutton = notify => {
-    if (notify === 1) {
-      setTimeout(() => {
-        this.setState({ blink: !this.state.blink });
+        this.setState({ blink: !this.state.blink }, () => {
+          //  console.log(this.state);
+        });
       }, 1000);
     }
     return this.state.blink;

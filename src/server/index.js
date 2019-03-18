@@ -134,11 +134,14 @@ io.sockets.on("connection", function(socket) {
         port: parseInt(userConfig.port)
       });
 
+      // console.log("Heroooooooooooooooooooooooooooooooooooo");
       //setting the flags value to 0
       data.flags.performanceFlag = 0;
       data.flags.hitRatioFlag = 0;
       data.flags.memoryFlag = 0;
       data.flags.numberOfClientsFlag = 0;
+
+      console.log("updated flags to ", data.flags);
 
       //checking for clients
       if (client.server_info.connected_slaves > 0) {
@@ -298,6 +301,7 @@ function sendMail(mailOptions) {
     } else {
       console.log("Email sent: " + info.response);
       blink = 2;
+      console.log("Changed blink to ", blink);
     }
   });
 }
@@ -605,6 +609,11 @@ function getinfo(userData, id, port, socket) {
       });
     });
 
+    // console.log("Mail flag ", sendMailFlag);
+    // console.log("Blink", blink);
+    // console.log("Current data", data);
+    // console.log("User data", userData);
+    // console.log("Current data flags", data.flags);
     //socket for sending data to blink notification
     if (sendMailFlag === 1 && blink === 2) {
       blink = 1;
@@ -612,7 +621,7 @@ function getinfo(userData, id, port, socket) {
     }
     //socket for sending the real time data to dashboard
     socket.emit("info", data);
-  }, 2000);
+  }, 7000);
 }
 
 //function for getting the data between two dates

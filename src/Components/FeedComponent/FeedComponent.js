@@ -26,11 +26,16 @@ class FeedComponent extends Component {
         <div className="feed-container">
           <HeaderComponent heading="Feed" />
           <h1>Welcome to your FEED</h1>
+          <hr />
           <div className="feed-container-cardcontainer">
             <div className="grid">
               {arr.map(res => {
-                console.log(res);
-                return <FeedCardComponent element={res} />;
+                return (
+                  <div>
+                    <FeedCardComponent element={res} />
+                    {res.id === 0 && <hr />}
+                  </div>
+                );
               })}
             </div>
           </div>

@@ -7,19 +7,25 @@ class ProgressBarComponent extends Component {
     super(props);
     this.state = {
       lessthan80: true,
-      morethan80: false
+      morethan80: false,
+      percentag: this.props.percentage
     };
   }
 
-  render() {
-    const { percentage } = this.props;
-    let percentag = percentage;
-    if (percentag > 80 && percentag <= 100) {
-      this.setState({ morethan80: true });
-    } else if (percentag > 100) {
-      percentag = 100;
+  componentDidMount() {
+    if (this.state.percentag > 80 && this.props.percentag <= 100) {
+      this.setState({
+        morethan80: true
+      });
+    } else if (this.state.percentag > 100) {
+      this.setState({
+        percentag: 100
+      });
     }
-    let percent = 460 * (percentag / 100);
+  }
+
+  render() {
+    let percent = 460 * (this.state.percentag / 100);
     return (
       <div className="progress-bar">
         {this.state.lessthan80 && <Filler percentage={percent} />}
