@@ -10,7 +10,10 @@ const nodemailer = require("nodemailer");
 const moment = require("moment");
 var sendMailFlag = 0; //variable used for sending the mail only once
 let blink = 1;
+let infoInterval = null;
 let u = { port: null, host: null, password: null };
+let rclient = null;
+let flag = false;
 var data = {
   metrics: {
     performanceData: 0,
@@ -27,27 +30,12 @@ var data = {
     hitRatioFlag: 0
   }
 };
-const port = process.env.PORT || "4000";
-server.listen(port, () => {
-  console.log(
-    "Listening to port",
-    port,
-    process.env.PORT,
-    process.env.PORT_NUMBER
-  );
-});
-let rclient = null;
 app.use(express.static(path.join(__dirname, "../../build")));
 
 //testing the server on index.html
 app.get("/", function(req, res) {
   res.sendFile(__dirname + "./index.html");
 });
-
-app.get("/port_address", function(req, res) {
-  return res.send(process.env.PORT);
-});
-
 class Record {
   constructor(date, data) {
     this.date = date;
@@ -60,7 +48,6 @@ io.sockets.on("connection", function(socket) {
   socket.setMaxListeners(0);
   //socket for saving the threshold values of the user config settings to mongodb
   socket.on("user-config", function(userConfig, callback) {
-    var slaves = [];
     client = redis.createClient({
       port: userConfig.port,
       host: userConfig.databaseHost,
@@ -70,7 +57,7 @@ io.sockets.on("connection", function(socket) {
     client.on("error", function(err, res) {
       if (err) {
         console.log(err);
-        callback(slaves);
+        callback(false);
         client.end(false);
       }
     });
@@ -78,40 +65,14 @@ io.sockets.on("connection", function(socket) {
     client.on("ready", function(err, res) {
       insertIntoUser(userConfig, function(res) {});
       u = userConfig;
-      //first element will be the master
-      slaves.push({
-        id: 0,
-        port: parseInt(userConfig.port)
-      });
-
-      //checking for slaves
-      if (client.server_info.connected_slaves > 0) {
-        let i;
-        for (i = 0; i < client.server_info.connected_slaves; i++) {
-          console.log(
-            client["server_info"]["slave" + i.toString()]
-              .match(/port=\d+/i)[0]
-              .split("=")[1]
-          );
-          slaves.push({
-            id: i + 1,
-            port: parseInt(
-              client["server_info"]["slave" + i.toString()]
-                .match(/port=\d+/i)[0]
-                .split("=")[1]
-            )
-          });
-        }
-      }
-      //sending the list of slaves as callback
-      callback(slaves);
+      //sending true as callback
+      callback(true);
       client.end(false);
     });
   });
 
   //socket for updating user configuration
   socket.on("update-user-config", function(userConfig, callback) {
-    slaves = [];
     client = redis.createClient({
       port: userConfig.port,
       host: userConfig.databaseHost,
@@ -120,55 +81,25 @@ io.sockets.on("connection", function(socket) {
 
     client.on("error", function(err, res) {
       if (err) {
-        callback(slaves);
+        callback(false);
         client.end(false);
       }
     });
 
     client.on("ready", function(err, res) {
-      updateUserConfig(userConfig, function(res) {});
-      u = userConfig;
-      //first  element will be the master
-      slaves.push({
-        id: 0,
-        port: parseInt(userConfig.port)
+      updateUserConfig(userConfig, function(res) {
+        u = userConfig;
+        //setting the flags value to 0
+        data.flags.performanceFlag = 0;
+        data.flags.hitRatioFlag = 0;
+        data.flags.memoryFlag = 0;
+        data.flags.numberOfClientsFlag = 0;
+        sendMailFlag = 0;
+        console.log("updated flags to ", data.flags);
+        console.log("Updated user config", res);
+        callback(true);
+        client.end(false);
       });
-
-      // console.log("Heroooooooooooooooooooooooooooooooooooo");
-      //setting the flags value to 0
-      data.flags.performanceFlag = 0;
-      data.flags.hitRatioFlag = 0;
-      data.flags.memoryFlag = 0;
-      data.flags.numberOfClientsFlag = 0;
-
-      console.log("updated flags to ", data.flags);
-
-      //checking for clients
-      if (client.server_info.connected_slaves > 0) {
-        let i;
-        for (i = 0; i < client.server_info.connected_slaves; i++) {
-          console.log(
-            client["server_info"]["slave" + i.toString()]
-              .match(/port=\d+/i)[0]
-              .split("=")[1]
-          );
-          slaves.push({
-            id: i + 1,
-            port: parseInt(
-              client["server_info"]["slave" + i.toString()]
-                .match(/port=\d+/i)[0]
-                .split("=")[1]
-            )
-          });
-        }
-      }
-
-      console.log(slaves);
-      //sending the list of slaves
-      callback(slaves);
-
-      //closing the client
-      client.end(false);
     });
   });
 
@@ -213,8 +144,6 @@ io.sockets.on("connection", function(socket) {
           });
         }
       }
-
-      console.log(slaves);
       //sending the list of slaves
       callback(slaves);
 
@@ -236,7 +165,8 @@ io.sockets.on("connection", function(socket) {
   });
 
   //socket for starting the monitoring on the dashboard
-  socket.on("startMonitoring", (id, port) => {
+  socket.on("startMonitoring", (id, port, falg) => {
+    flag = falg;
     getUserData(function(thresholdValues) {
       console.log("ID AND PORT THST CSMR IS : ", port, id);
       getinfo(thresholdValues, id, port, socket);
@@ -295,15 +225,18 @@ var transporter = nodemailer.createTransport({
 
 //function to send the mail to developer if alert is triggered
 function sendMail(mailOptions) {
-  transporter.sendMail(mailOptions, function(error, info) {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log("Email sent: " + info.response);
-      blink = 2;
-      console.log("Changed blink to ", blink);
-    }
-  });
+  if (flag) {
+    transporter.sendMail(mailOptions, function(error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Email sent: " + info.response);
+        blink = 2;
+        console.log("Changed blink to ", blink);
+      }
+    });
+    flag = false;
+  }
 }
 
 //function to insert the userconfig into the config collection in user database
@@ -325,6 +258,7 @@ function insertIntoUser(userConfig, fn) {
 
 //function to update the userconfig
 function updateUserConfig(newUserConfig, callback) {
+  clearInterval(infoInterval);
   mongoClient.connect(url, { useNewUrlParser: true }, function(err, user) {
     //connecting the mongoclient
     if (err) throw err;
@@ -336,8 +270,7 @@ function updateUserConfig(newUserConfig, callback) {
       .insertOne(newConfig, function(err, res) {
         if (err) callback(false);
         else {
-          callback(true);
-          sendMailFlag = 0;
+          callback(res);
         }
         user.close();
       });
@@ -429,6 +362,7 @@ function insertdataintoDateMetricDatabase(notifyData, callback) {
 
 //function to get the info of the redis database
 function getinfo(userData, id, port, socket) {
+  console.log(userData);
   if (rclient === null) {
     rclient = redis.createClient({
       port: port,
@@ -455,7 +389,8 @@ function getinfo(userData, id, port, socket) {
     maxHitRatio: 0
   };
   let i = 1;
-  setInterval(() => {
+  infoInterval = setInterval(() => {
+    console.log("SENDMAIFLAG : ", sendMailFlag);
     //data format of metric which is going to added in database
     rclient.info((req, res) => {
       res.split("\n").map(line => {
@@ -524,10 +459,7 @@ function getinfo(userData, id, port, socket) {
         .add(i, "days")
         .format("YYYY/MM/DD");
       i += 1;
-      insertdataintoDateMetricDatabase(notifyData, function(insert) {
-        if (insert) console.log("Inserte data date wala");
-        else console.log("Not inserted");
-      });
+      insertdataintoDateMetricDatabase(notifyData, function(insert) {});
     }
 
     //insertng into the metric database
@@ -537,7 +469,8 @@ function getinfo(userData, id, port, socket) {
     if (
       data.metrics.performanceData >
         parseInt(userData.thresholdCpuPerformance) &&
-      sendMailFlag == 0
+      flag
+      //  &&      sendMailFlag === 0
     ) {
       data.flags.performanceFlag = 1;
       var mailOptions = {
@@ -546,14 +479,15 @@ function getinfo(userData, id, port, socket) {
         subject: "Performance Alert regarding redis database",
         text: "PERFORMANCE ALERT"
       };
-      sendMail(mailOptions);
       sendMailFlag = 1;
+      sendMail(mailOptions);
     }
 
     //condition for checking the used memory by redis
     if (
-      data.metrics.usedMemory > parseInt(userData.thresholdMemory) &&
-      sendMailFlag == 0
+      flag &&
+      data.metrics.usedMemory > parseInt(userData.thresholdMemory)
+      //  &&      sendMailFlag === 0
     ) {
       data.flags.memoryFlag = 1;
       var mailOptions = {
@@ -562,30 +496,41 @@ function getinfo(userData, id, port, socket) {
         subject: "Memory Alert regarding redis database",
         text: "MEMORY ALERT"
       };
-      sendMail(mailOptions);
       sendMailFlag = 1;
+      sendMail(mailOptions);
     }
+    console.log(
+      "THREDIHSLFUBVIYKGJLKBHMFGCXFY : ",
+      data.metrics.numberOfClient,
+      userData.thresholdNoOfClients
+    );
     //condition for checking the no of clients alert
     if (
-      data.metrics.numberOfClient > parseInt(userData.thresholdNoOfClients) &&
-      sendMailFlag == 0
+      flag &&
+      data.metrics.numberOfClient > parseInt(userData.thresholdNoOfClients)
+      // &&      sendMailFlag === 0
     ) {
       data.flags.numberOfClientsFlag = 1;
       var mailOptions = {
         from: "aloowalia22@gmail.com",
         to: userData.email,
-        subject: "No of Clients Alert regarding redis database",
+        subject:
+          "No of Clients Alert regarding redis database" +
+          userData.thresholdNoOfClients +
+          " " +
+          data.metrics.numberOfClient,
         text: "NO OF CLIENTS ALERT"
       };
-      sendMail(mailOptions);
       sendMailFlag = 1;
+      sendMail(mailOptions);
     }
 
     //condition for checking the hit ratio alert
     if (
-      data.metrics.keySpaceHit /
-        (data.metrics.keySpaceHit + data.metrics.keySpaceMiss) >=
-        1 ||
+      (flag &&
+        data.metrics.keySpaceHit /
+          (data.metrics.keySpaceHit + data.metrics.keySpaceMiss) >=
+          1) ||
       (data.metrics.keySpaceHit > 0 &&
         data.metrics.keySpaceHit /
           (data.metrics.keySpaceHit + data.metrics.keySpaceMiss) <
@@ -598,8 +543,8 @@ function getinfo(userData, id, port, socket) {
         subject: "Hit Ratio Alert regarding redis database",
         text: "Hit Ratio ALERT"
       };
-      sendMail(mailOptions);
       sendMailFlag = 1;
+      sendMail(mailOptions);
     }
 
     //socket for sending the notify data to notification
@@ -609,19 +554,15 @@ function getinfo(userData, id, port, socket) {
       });
     });
 
-    // console.log("Mail flag ", sendMailFlag);
-    // console.log("Blink", blink);
-    // console.log("Current data", data);
-    // console.log("User data", userData);
-    // console.log("Current data flags", data.flags);
     //socket for sending data to blink notification
     if (sendMailFlag === 1 && blink === 2) {
       blink = 1;
+      console.log("Emmitting blinking event");
       socket.emit("get-data-for-blinking-notification", data.flags);
     }
     //socket for sending the real time data to dashboard
     socket.emit("info", data);
-  }, 7000);
+  }, 2000);
 }
 
 //function for getting the data between two dates
@@ -649,3 +590,7 @@ function getDataBetweenTwoDates(startDate, endDate, callback) {
       });
   });
 }
+const port = process.env.PORT || "4000";
+server.listen(port, () => {
+  console.log("Listening to port", port);
+});

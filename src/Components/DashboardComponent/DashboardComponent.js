@@ -26,13 +26,17 @@ class DashboardComponent extends Component {
   //   });
   // }
 
+  componentWillUnmount() {
+    socket.disconnect();
+    socket.connect();
+  }
   componentDidMount() {
     socket.disconnect();
     socket.connect();
     console.log(this.props.location.state.port);
-    socket.emit("startMonitoring", this.state.id, this.state.port);
+    socket.emit("startMonitoring", this.state.id, this.state.port, true);
     socket.on("get-data-for-blinking-notification", data => {
-      console.log(data);
+      console.log("Blinking even", data);
       this.setState(
         {
           performanceFlag: data.performanceFlag,
