@@ -612,7 +612,6 @@ function getinfo(userData, id, port, socket) {
 
     //socket for sending data to blink notification
     if (sendMailFlag === 1 && blink === 2) {
-      blink = 1;
       console.log("Emmitting blinking event");
       socket.emit("get-data-for-blinking-notification", data.flags);
     }
