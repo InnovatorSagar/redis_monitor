@@ -34,10 +34,10 @@ app.use(express.static(path.join(__dirname, "../../build")));
 
 //testing the server on index.html
 app.get("*", function(req, res) {
-  res.sendFile(__dirname + "./index.html");
+  res.sendFile(__dirname + "/index.html");
 });
 app.get("/home", function(req, res) {
-  res.sendFile(__dirname + "./index.html");
+  res.sendFile(__dirname + "index.html");
 });
 class Record {
   constructor(date, data) {
