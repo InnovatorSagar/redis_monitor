@@ -35,7 +35,7 @@ var data = {
 var dire = __dirname.split("/");
 //testing the server on index.html
 app.get("*", function(req, res) {
-  res.sendFile(__dirname + "/scdgfn.html");
+  res.sendFile(__dirname + "/index.html");
 });
 app.get("/home", function(req, res) {
   res.sendFile(__dirname + "index.html");
