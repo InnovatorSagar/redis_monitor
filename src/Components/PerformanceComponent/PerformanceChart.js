@@ -1,11 +1,12 @@
 import React, { Component } from "react";
-import HitRatio from "./HitRatio";
+import Performance from "./Performance";
 import "../Chart.css";
 import { socket } from "../../index";
 import DetailChartModal from "../DetailChartModal/DetailChartModal";
 import LoadComponent from "../LoadComponent/LoadComponent";
+const moment = require("moment");
 
-class HitRatioChart extends Component {
+class PerformanceComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -17,8 +18,8 @@ class HitRatioChart extends Component {
         datasets: [
           {
             type: "line",
-            label: "Hit-Ratio",
-            borderColor: "#00BFFF",
+            label: "Performance of System",
+            borderColor: "orange",
             borderWidth: "2",
             lineTension: 0.45,
             data: []
@@ -59,12 +60,11 @@ class HitRatioChart extends Component {
 
   componentDidMount() {
     socket.on("info", data => {
-      let hitRatio = data.metrics.hitRatio;
-      if (isNaN(hitRatio)) {
-        hitRatio = 0;
+      this.change(data.metrics.performanceData);
+      if (moment().format("HH:mm:ss") === "00:00:00") {
+        this.state.values.splice(0, this.state.values.length);
       }
-      this.change(hitRatio);
-      this.state.values.push(hitRatio);
+      this.state.values.push(data.metrics.performanceData);
       this.setState({ percentage: this.state.memory });
       const oldDataSet = this.state.lineChartData.datasets[0];
       const newDataSet = { ...oldDataSet };
@@ -91,8 +91,8 @@ class HitRatioChart extends Component {
     return (
       <div>
         <div className="chart_size" onClick={this.detailGraphModal}>
-          Hit-Ratio: {this.state.memory}
-          <HitRatio
+          Performance: {this.state.memory}
+          <Performance
             data={this.state.lineChartData}
             options={this.state.lineChartOptions}
             height={this.state.height}
@@ -100,7 +100,7 @@ class HitRatioChart extends Component {
         </div>
         {this.state.redirect && (
           <DetailChartModal
-            heading="Hit-Ratio Matrix"
+            heading="Performance Matrix"
             visible={this.state.redirect}
             closeModal={this.closeModal}
           />
@@ -110,4 +110,4 @@ class HitRatioChart extends Component {
   }
 }
 
-export default HitRatioChart;
+export default PerformanceComponent;

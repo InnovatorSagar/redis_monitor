@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import HeaderComponent from "../HeaderComponent/HeaderComponent";
-import { Redirect } from "react-router-dom";
 import "./FeedComponent.css";
 import FeedCardComponent from "./FeedCardComponent/FeedCardComponent";
 import { socket } from "../..";
+import LoadComponent from "../LoadComponent/LoadComponent";
 
 class FeedComponent extends Component {
   constructor(props) {
@@ -28,24 +28,24 @@ class FeedComponent extends Component {
         <div>
           <HeaderComponent heading="Feed" />
           <div className="feed-container">
-          <h1>Welcome to your FEED</h1>
-          <hr />
-          <div className="feed-container-cardcontainer">
-            <div className="slave-grid">
-              {arr.map(res => {
-                return (
-                  <div>
-                    <FeedCardComponent element={res} />
-                  </div>
-                );
-              })}
+            <h1>Welcome to your FEED</h1>
+            <hr />
+            <div className="feed-container-cardcontainer">
+              <div className="slave-grid">
+                {arr.map(res => {
+                  return (
+                    <div>
+                      <FeedCardComponent element={res} />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
-        </div>
       );
     } else {
-      return <h3>Loading...</h3>;
+      return <LoadComponent text={true} />;
     }
   }
 }

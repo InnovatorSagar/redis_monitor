@@ -7,11 +7,11 @@ import "./NotificationComponent.css";
 class NotificationComponent extends Component {
   render() {
     const { visible, closeModal, heading, data, changeConf } = this.props;
-    console.log("Data foudn is ", data);
+    // console.log("Data foudn is ", data);
     var percentage, message;
-    console.log("Inside render of notification");
+    // console.log("Inside render of notification");
     if (heading === "Performance Matrix") {
-      console.log("in perforamnce", data);
+      // console.log("in perforamnce", data);
       percentage = parseInt((data.d / data.u) * 100);
       message = `Your CPU Performance has reached ${
         data.d
@@ -27,7 +27,7 @@ class NotificationComponent extends Component {
         data.d
       } i.e., ${percentage}% of your provided value: ${data.u}.`;
     } else {
-      console.log("data",data.d, data.u);
+      // console.log("data",data.d, data.u);
       percentage = parseInt((data.d / data.u) * 100);
       message = `Hit-Ratio on your redis has reached ${
         data.d

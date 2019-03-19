@@ -11,23 +11,14 @@ class DetailChartModal extends Component {
     };
   }
   render() {
-    const { visible, values, closeModal } = this.props;
+    const { visible, closeModal, heading } = this.props;
     return (
       <section>
-        <Modal
-          visible={visible}
-          width="1290"
-          height="600"
-          effect="fadeInUp"
-        >
-          <DetailChart values={values} />
-            <button
-              type="submit"
-              className="continuebutton"
-              onClick={closeModal}
-            >
-              Continue to Dashboard.
-            </button>
+        <Modal visible={visible} width="1290" height="600" effect="fadeInUp">
+          <DetailChart heading={heading} />
+          <button type="submit" className="continuebutton" onClick={closeModal}>
+            Continue to Dashboard.
+          </button>
         </Modal>
       </section>
     );

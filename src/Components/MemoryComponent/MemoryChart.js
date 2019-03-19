@@ -3,6 +3,7 @@ import Memory from "./Memory";
 import "../Chart.css";
 import { socket } from "../../index";
 import DetailChartModal from "../DetailChartModal/DetailChartModal";
+import LoadComponent from "../LoadComponent/LoadComponent";
 
 class MemoryChart extends Component {
   constructor(props) {
@@ -29,23 +30,21 @@ class MemoryChart extends Component {
         maintainAspectRatio: false,
         scales: {
           xAxes: [
-             {
-              gridLines: {
-               },
-               ticks: {
-                 stepSize: 60,
-                 autoSkip: true,
-                 maxTicksLimit: 10,
-               }
+            {
+              gridLines: {},
+              ticks: {
+                stepSize: 60,
+                autoSkip: true,
+                maxTicksLimit: 10
+              }
             }
           ],
           yAxes: [
             {
-              gridLines: {
-               },
+              gridLines: {},
               ticks: {
                 beginAtZero: true,
-                min: 0,
+                min: 0
               }
             }
           ]
@@ -57,17 +56,17 @@ class MemoryChart extends Component {
   }
   change(d) {
     this.setState(prevState => ({
-      memory: (d / (1024 * 1024) / 15.5) * 100
+      memory: d
     }));
   }
   detailGraphModal = () => {
     const val = [...this.state.values];
-    this.setState({ val: val});
-    this.setState({ redirect: true});
-  }
+    this.setState({ val: val });
+    this.setState({ redirect: true });
+  };
   closeModal = () => {
     this.setState({ redirect: false });
-  }
+  };
   componentDidMount() {
     socket.on("info", data => {
       this.change(data.metrics.usedMemory);
@@ -81,26 +80,35 @@ class MemoryChart extends Component {
       const newChartData = {
         ...this.state.lineChartData,
         datasets: [newDataSet],
-        labels: this.state.lineChartData.labels.concat(new Date().toLocaleTimeString()) 
-      }
+        labels: this.state.lineChartData.labels.concat(
+          new Date().toLocaleTimeString()
+        )
+      };
       if (newChartData.labels.length % 8 === 0) {
-         newChartData.labels.shift();
-       }
+        newChartData.labels.shift();
+      }
       this.setState({ lineChartData: newChartData });
     });
   }
   render() {
+    if (this.state.memory === null) return <LoadComponent />;
     return (
       <div>
         <div className="chart_size" onClick={this.detailGraphModal}>
-        memory: {this.state.memory}
-        <Memory
-          data={this.state.lineChartData}
-          options={this.state.lineChartOptions}
-          height={this.state.height}
-        />
+          Memory: {this.state.memory} KB
+          <Memory
+            data={this.state.lineChartData}
+            options={this.state.lineChartOptions}
+            height={this.state.height}
+          />
         </div>
-        {this.state.redirect && <DetailChartModal values={this.state.val} visible={this.state.redirect} closeModal={this.closeModal}/>}
+        {this.state.redirect && (
+          <DetailChartModal
+            heading="Memory Matrix"
+            visible={this.state.redirect}
+            closeModal={this.closeModal}
+          />
+        )}
       </div>
     );
   }

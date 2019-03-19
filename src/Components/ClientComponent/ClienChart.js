@@ -3,6 +3,7 @@ import Client from "./Client";
 import "../Chart.css";
 import { socket } from "../../index";
 import DetailChartModal from "../DetailChartModal/DetailChartModal";
+import LoadComponent from "../LoadComponent/LoadComponent";
 
 class ClientChart extends Component {
   constructor(props) {
@@ -36,27 +37,26 @@ class ClientChart extends Component {
               }
             }
           ]
-        },
-      
-    },
-    height: 160,
-    memory: null
-  };
-}
+        }
+      },
+      height: 160,
+      memory: null
+    };
+  }
   change(d, u) {
     this.setState(prevState => ({
       max: u,
-      memory: d,
+      memory: d
     }));
   }
   detailGraphModal = () => {
     const val = [...this.state.values];
     this.setState({ val: val });
     this.setState({ redirect: true });
-  }
+  };
   closeModal = () => {
     this.setState({ redirect: false });
-  }
+  };
   componentDidMount() {
     socket.on("info", data => {
       this.change(data.metrics.numberOfClient, data.metrics);
@@ -82,17 +82,24 @@ class ClientChart extends Component {
   }
 
   render() {
+    if (this.state.memory === null) return <LoadComponent />;
     return (
       <div>
         <div className="chart_size" onClick={this.detailGraphModal}>
-        Number of Clients: {this.state.memory}
-        <Client
-          data={this.state.lineChartData}
-          options={this.state.lineChartOptions}
-          height={this.state.height}
-        />
+          Number of Clients: {this.state.memory}
+          <Client
+            data={this.state.lineChartData}
+            options={this.state.lineChartOptions}
+            height={this.state.height}
+          />
         </div>
-        {this.state.redirect && <DetailChartModal values={this.state.val} visible={this.state.redirect} closeModal={this.closeModal}/>}
+        {this.state.redirect && (
+          <DetailChartModal
+            heading="Number Of Clients"
+            visible={this.state.redirect}
+            closeModal={this.closeModal}
+          />
+        )}
       </div>
     );
   }

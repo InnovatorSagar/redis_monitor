@@ -22,7 +22,7 @@ var data = {
     usedMemory: 0,
     keySpaceHit: 0,
     keySpaceMiss: 0,
-    hitRatio:0
+    hitRatio: 0
   },
   flags: {
     performanceFlag: 0,
@@ -47,10 +47,27 @@ class Record {
 //socket On when user connected to localhost 4000
 io.sockets.on("connection", function(socket) {
   socket.setMaxListeners(0);
-  
+
+  socket.on("data-for-day-graph", function(fn) {
+    mongoClient.connect(url, { useNewUrlParser: true }, function(
+      err,
+      metrices
+    ) {
+      if (err) throw err;
+      var RDBAlert = metrices.db("rdbalert");
+      RDBAlert.collection("redismetric")
+        .find()
+        .toArray()
+        .then(res => {
+          console.log(res);
+          fn(res);
+        });
+    });
+  });
+
   //socket for saving the threshold values of the user config settings to mongodb
   socket.on("user-config", function(userConfig, callback) {
-   var client = redis.createClient({
+    var client = redis.createClient({
       port: userConfig.port,
       host: userConfig.databaseHost,
       password: userConfig.databasePass
@@ -58,7 +75,7 @@ io.sockets.on("connection", function(socket) {
 
     client.on("error", function(err, res) {
       if (err) {
-        console.log(err);
+        // console.log(err);
         callback(false);
         client.end(false);
       }
@@ -75,7 +92,7 @@ io.sockets.on("connection", function(socket) {
 
   //socket for updating user configuration
   socket.on("update-user-config", function(userConfig, callback) {
-   var client = redis.createClient({
+    var client = redis.createClient({
       port: userConfig.port,
       host: userConfig.databaseHost,
       password: userConfig.databasePass
@@ -107,8 +124,8 @@ io.sockets.on("connection", function(socket) {
 
   //returning number of slaves
   socket.on("get-master-slave", function(callback) {
-   var slaves = [];
-   var client = redis.createClient({
+    var slaves = [];
+    var client = redis.createClient({
       port: u.port,
       host: u.databaseHost,
       password: u.databasePass
@@ -122,8 +139,6 @@ io.sockets.on("connection", function(socket) {
     });
 
     client.on("ready", function(err, res) {
-
-
       //first  element will be the master
       slaves.push({
         id: 0,
@@ -133,11 +148,11 @@ io.sockets.on("connection", function(socket) {
       if (client.server_info.connected_slaves > 0) {
         let i;
         for (i = 0; i < client.server_info.connected_slaves; i++) {
-          console.log(
-            client["server_info"]["slave" + i.toString()]
-              .match(/port=\d+/i)[0]
-              .split("=")[1]
-          );
+          // console.log(
+          //   client["server_info"]["slave" + i.toString()]
+          //     .match(/port=\d+/i)[0]
+          //     .split("=")[1]
+          // );
           slaves.push({
             id: i + 1,
             port: parseInt(
@@ -228,15 +243,15 @@ var transporter = nodemailer.createTransport({
 
 //function to send the mail to developer if alert is triggered
 function sendMail(mailOptions) {
-    transporter.sendMail(mailOptions, function(error, info) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log("Email sent: " + info.response);
-        blink = 2;
-        console.log("Changed blink to ", blink);
-      }
-    });
+  transporter.sendMail(mailOptions, function(error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent: " + info.response);
+      blink = 2;
+      // console.log("Changed blink to ", blink);
+    }
+  });
 }
 
 //function to insert the userconfig into the config collection in user database
@@ -247,8 +262,7 @@ function insertIntoUser(userConfig, fn) {
     var databaseObject = user.db("rdbalert"); //creating the database Object
     var config = userConfig;
     databaseObject
-      .collection(
-        "userconfig")
+      .collection("userconfig")
       .insertOne(config, function(err, res) {
         if (err) fn(false);
         fn(true);
@@ -363,9 +377,7 @@ function insertdataintoDateMetricDatabase(notifyData, callback) {
 
 //function to get the info of the redis database
 function getinfo(userData, id, port, socket) {
-
-  if(infoInterval !== null)
-     clearInterval(infoInterval);
+  if (infoInterval !== null) clearInterval(infoInterval);
   //console.log(userData);
   if (rclient === null) {
     rclient = redis.createClient({
@@ -421,14 +433,16 @@ function getinfo(userData, id, port, socket) {
       });
     });
 
-    data.metrics.hitRatio=data.metrics.keySpaceHit /(data.metrics.keySpaceHit + data.metrics.keySpaceMiss)
+    data.metrics.hitRatio =
+      data.metrics.keySpaceHit /
+      (data.metrics.keySpaceHit + data.metrics.keySpaceMiss);
 
-    if(isNaN(data.metrics.hitRatio)){
-      data.metrics.hitRatio=0;
+    if (isNaN(data.metrics.hitRatio)) {
+      data.metrics.hitRatio = 0;
     }
 
     var metrics = {
-      createdAt: moment().format("YYYY/MM/DD"),
+      createdAt: moment().format("YYYY/MM/DDTHH:mm:ss"),
       performanceMetric: data.metrics.performanceData,
       usedMemoryMetric: data.metrics.usedMemory,
       noOfClientsMetric: data.metrics.numberOfClient,
@@ -479,63 +493,78 @@ function getinfo(userData, id, port, socket) {
       from: "aloowalia22@gmail.com",
       to: userData.email,
       subject: "ALERT FROM RDBALERT",
-      text: "Hi "+userData.name+" ,\n\n\n"
+      text: "Hi " + userData.name + " ,\n\n\n"
     };
 
-    var mailFlag=0;
+    var mailFlag = 0;
     var mailOptions = {
       from: "aloowalia22@gmail.com",
       to: userData.email,
       subject: "REDIS SERVER ALERT",
-      text: "Hi "+userData.name+" ,\n\n\n "
+      text: "Hi " + userData.name + " ,\n\n\n "
     };
 
-    var mailFlag=0;
+    var mailFlag = 0;
 
     //condition checking for checking the performance of cpu
     if (
-      data.metrics.performanceData >
-        parseInt(userData.thresholdCpuPerformance)
+      data.metrics.performanceData > parseInt(userData.thresholdCpuPerformance)
     ) {
       data.flags.performanceFlag = 1;
-        mailOptions.text += "PERFORMANCE ALERT "+"\n Threshold Performance Data : "+userData.thresholdCpuPerformance
-        +" \nPerformance Data : "+data.metrics.performanceData+"\n\n"
-      mailFlag=1;
+      mailOptions.text +=
+        "PERFORMANCE ALERT " +
+        "\n Threshold Performance Data : " +
+        userData.thresholdCpuPerformance +
+        " \nPerformance Data : " +
+        data.metrics.performanceData +
+        "\n\n";
+      mailFlag = 1;
     }
-    console.log(data.metrics.hitRatio,userData.thresholdHitRatio)
+    // console.log(data.metrics.hitRatio,userData.thresholdHitRatio)
 
     //condition for checking the used memory by redis
-    if (
-      data.metrics.usedMemory > parseInt(userData.thresholdMemory)
-    ) {
+    if (data.metrics.usedMemory > parseInt(userData.thresholdMemory)) {
       data.flags.memoryFlag = 1;
-      mailOptions.text+="MEMORY ALERT "+"\nThreshold Memory : "+userData.thresholdMemory
-        +"\n UsedMemory : "+data.metrics.usedMemory+"\n\n"
-      mailFlag=1; 
+      mailOptions.text +=
+        "MEMORY ALERT " +
+        "\nThreshold Memory : " +
+        userData.thresholdMemory +
+        "\n UsedMemory : " +
+        data.metrics.usedMemory +
+        "\n\n";
+      mailFlag = 1;
     }
 
     //condition for checking the no of clients alert
-    if (
-      data.metrics.numberOfClient > parseInt(userData.thresholdNoOfClients)
-    ) {
+    if (data.metrics.numberOfClient > parseInt(userData.thresholdNoOfClients)) {
       data.flags.numberOfClientsFlag = 1;
-      mailOptions.text+="NO OF CLIENTS ALERT "+"\nThreshold No Of Clients : "+userData.thresholdNoOfClients
-        +"\nNo Of Clients : "+data.metrics.numberOfClient+"\n\n"
-      mailFlag=1;
+      mailOptions.text +=
+        "NO OF CLIENTS ALERT " +
+        "\nThreshold No Of Clients : " +
+        userData.thresholdNoOfClients +
+        "\nNo Of Clients : " +
+        data.metrics.numberOfClient +
+        "\n\n";
+      mailFlag = 1;
     }
 
     //condition for checking the hit ratio alert
-    if (data.metrics.hitRatio>=parseFloat(userData.thresholdHitRatio)) {
+    if (data.metrics.hitRatio >= parseFloat(userData.thresholdHitRatio)) {
       data.flags.hitRatioFlag = 1;
-      mailOptions.text+="Hit Ratio Alert "+"\nThreshold Hit Ratio : "+userData.thresholdHitRatio
-        +" \nHitratio : "+data.metrics.hitRatio+"\n"
-      mailFlag=1;
+      mailOptions.text +=
+        "Hit Ratio Alert " +
+        "\nThreshold Hit Ratio : " +
+        userData.thresholdHitRatio +
+        " \nHitratio : " +
+        data.metrics.hitRatio +
+        "\n";
+      mailFlag = 1;
     }
 
-    if(sendMailFlag === 0 && mailFlag === 1){
-      mailOptions.text+="\nRegards,\nRDBAlert Team"
+    if (sendMailFlag === 0 && mailFlag === 1) {
+      mailOptions.text += "\nRegards,\nRDBAlert Team";
       sendMail(mailOptions);
-      sendMailFlag=1;
+      sendMailFlag = 1;
     }
 
     //socket for sending the notify data to notification
