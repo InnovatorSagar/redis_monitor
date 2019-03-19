@@ -35,7 +35,7 @@ app.use(express.static(path.join(__dirname, "../../build")));
 var dire = __dirname.split("/");
 //testing the server on index.html
 app.get("*", function(req, res) {
-  res.sendFile(__dirname + "/index.html");
+  res.sendFile("/app/public/index.html");
 });
 app.get("/home", function(req, res) {
   res.sendFile(__dirname + "index.html");
@@ -222,8 +222,8 @@ var transporter = nodemailer.createTransport({
   port: 587,
   pool: true,
   auth: {
-    user: "rdbalerta@gmail.com",
-    pass: "Rdbalert@1"
+    user: "aloowalia22@gmail.com",
+    pass: "asdfg@123"
   }
 });
 
