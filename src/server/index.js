@@ -220,8 +220,8 @@ var transporter = nodemailer.createTransport({
   port: 587,
   pool: true,
   auth: {
-    user: "aloowalia22@gmail.com",
-    pass: "asdfg@123"
+    user: "rdbalerta@gmail.com",
+    pass: "Rdbalert@1"
   }
 });
 
@@ -479,8 +479,8 @@ function getinfo(userData, id, port, socket) {
     var mailOptions = {
       from: "aloowalia22@gmail.com",
       to: userData.email,
-      subject: "ALERT FROM RDBALERT",
-      text: "Hi "+userData.name+" ,\n\n\n"
+      subject: "REDIS SERVER ALERT",
+      text: "Hi "+userData.name+" ,\n\n\n "
     };
 
     var mailFlag=0;
@@ -492,7 +492,7 @@ function getinfo(userData, id, port, socket) {
     ) {
       data.flags.performanceFlag = 1;
         mailOptions.text += "PERFORMANCE ALERT "+"\n Threshold Performance Data : "+userData.thresholdCpuPerformance
-        +" \nPerformance Data : "+data.metrics.performanceData+"\n"
+        +" \nPerformance Data : "+data.metrics.performanceData+"\n\n"
       mailFlag=1;
     }
 
@@ -504,7 +504,7 @@ function getinfo(userData, id, port, socket) {
     ) {
       data.flags.memoryFlag = 1;
       mailOptions.text+="MEMORY ALERT "+"\nThreshold Memory : "+userData.thresholdMemory
-        +"\n UsedMemory : "+data.metrics.usedMemory+"\n"
+        +"\n UsedMemory : "+data.metrics.usedMemory+"\n\n"
       mailFlag=1; 
     }
 
@@ -514,7 +514,7 @@ function getinfo(userData, id, port, socket) {
     ) {
       data.flags.numberOfClientsFlag = 1;
       mailOptions.text+="NO OF CLIENTS ALERT "+"\nThreshold No Of Clients : "+userData.thresholdNoOfClients
-        +"\nNo Of Clients : "+data.metrics.numberOfClient+"\n"
+        +"\nNo Of Clients : "+data.metrics.numberOfClient+"\n\n"
       mailFlag=1;
     }
 
@@ -530,7 +530,7 @@ function getinfo(userData, id, port, socket) {
           parseInt(userData.thresholdHitRatio))) {
       data.flags.hitRatioFlag = 1;
       mailOptions.text+="Hit Ratio Alert "+"\nThreshold Hit Ratio : "+userData.thresholdHitRatio
-        +" \nHitratio : "+data.metrics.hitRatio
+        +" \nHitratio : "+data.metrics.hitRatio+"\n"
       mailFlag=1;
     }
 
