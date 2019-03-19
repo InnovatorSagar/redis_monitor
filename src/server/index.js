@@ -35,7 +35,7 @@ app.use(express.static(path.join(__dirname, "../../build")));
 var dire = __dirname.split("/");
 //testing the server on index.html
 app.get("*", function(req, res) {
-  res.sendFile("/app/src/index.js");
+  res.sendFile("/app/public/index.html");
 });
 app.get("/home", function(req, res) {
   res.sendFile(__dirname + "index.html");
