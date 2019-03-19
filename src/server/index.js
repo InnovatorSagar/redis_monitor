@@ -18,7 +18,7 @@ let flag = false;
 var data = {
   metrics: {
     performanceData: 0,
-    numberOfClient: 1,
+    numberOfClient: 0,
     maximumMemory: 0,
     usedMemory: 0,
     keySpaceHit: 0,
@@ -254,7 +254,6 @@ function sendMail(mailOptions) {
     } else {
       console.log("Email sent: " + info.response);
       blink = 2;
-      console.log("Changed blink to ", blink);
     }
   });
 }
@@ -411,174 +410,178 @@ function getinfo(userData, id, port, socket) {
   };
   let i = 1;
   infoInterval = setInterval(() => {
+    getUserData(userData => {
+      rclient.info((req, res) => {
+        res.split("\n").map(line => {
+          if (line.match(/used_cpu_sys:\d+\.\d+/i)) {
+            //console.log("Performance Data: " + line.split(":")[1]);
+            data.metrics.performanceData = parseFloat(line.split(":")[1]);
+          }
+          if (line.match(/used_memory:\d/i)) {
+            //console.log('Used memory: ' + line.split(":")[1]);
+            data.metrics.usedMemory = parseInt(line.split(":")[1]);
+          }
+          if (line.match(/connected_clients/i)) {
+            //console.log('Clients: ' + line.split(":")[1]);
+            data.metrics.numberOfClient = parseInt(line.split(":")[1]);
+          }
+          if (line.match(/keyspace_hits:\d/i)) {
+            //console.log('keyspace_hit:'+ line.split(':'[1]))
+            data.metrics.keySpaceHit = parseInt(line.split(":")[1]);
+          }
+          if (line.match(/keyspace_misses:\d/i)) {
+            //console.log('keyspace_misses:'+ line.split(':'[1]))
+            data.metrics.keySpaceMiss = parseInt(line.split(":")[1]);
+          }
+        });
+
+        data.metrics.hitRatio =
+          data.metrics.keySpaceHit /
+          (data.metrics.keySpaceHit + data.metrics.keySpaceMiss);
+
+        if (isNaN(data.metrics.hitRatio)) {
+          data.metrics.hitRatio = 0;
+        }
+
+        var metrics = {
+          createdAt: moment().format("YYYY/MM/DDTHH:mm:ss"),
+          performanceMetric: data.metrics.performanceData,
+          usedMemoryMetric: data.metrics.usedMemory,
+          noOfClientsMetric: data.metrics.numberOfClient,
+          hitRatio:
+            data.metrics.keySpaceHit /
+            (data.metrics.keySpaceHit + data.metrics.keySpaceMiss)
+        };
+
+        //checking if hitratio is NaN
+        if (isNaN(metrics.hitRatio)) {
+          metrics.hitRatio = 0;
+        }
+
+        //condition for getting the maxperformance data per sec
+        if (metrics.performanceMetric > notifyData.maxPerformanceData) {
+          notifyData.maxPerformanceData = metrics.performanceMetric;
+        }
+
+        //condition for getting the max no of clients data per sec
+        if (metrics.noOfClientsMetric > notifyData.maxUsedMemory) {
+          notifyData.maxNumberOfClient = metrics.noOfClientsMetric;
+        }
+
+        //condition for getting the max used memory data per sec
+        if (metrics.usedMemoryMetric > notifyData.maxUsedMemory) {
+          notifyData.maxUsedMemory = metrics.usedMemoryMetric;
+        }
+
+        //condition for getting the max hitratio data per sec
+        if (metrics.hitRatio > notifyData.maxHitRatio) {
+          notifyData.maxHitRatio = metrics.hitRatio;
+        }
+
+        //entering the max data at end of the day
+        if (moment().format("HH:mm:ss") == "00:00:00") {
+          notifyData._id = i;
+          notifyData.createdAt = moment()
+            .add(i, "days")
+            .format("YYYY/MM/DD");
+          i += 1;
+          insertdataintoDateMetricDatabase(notifyData, function(insert) {});
+        }
+
+        //insertng into the metric database
+        insertIntoMetricesDb(metrics, function(insert) {});
+        var mailOptions = {
+          from: "rdbalerta@gmail.com",
+          to: userData.email,
+          subject: "REDIS SERVER ALERT",
+          text:
+            "Hi " +
+            userData.name +
+            " ,\n\n\n Your redis server has exceeded the following threshold values :- \n\n"
+        };
+
+        //condition checking for checking the performance of cpu
+        if (
+          data.metrics.performanceData >
+          parseInt(userData.thresholdCpuPerformance)
+        ) {
+          data.flags.performanceFlag = 1;
+          mailOptions.text +=
+            "PERFORMANCE ALERT " +
+            "\n Threshold Performance Data : " +
+            userData.thresholdCpuPerformance +
+            " \nPerformance Data : " +
+            data.metrics.performanceData +
+            "\n\n";
+          mailFlag = 1;
+        }
+        // console.log(data.metrics.hitRatio, userData.thresholdHitRatio);
+
+        //condition for checking the used memory by redis
+        if (data.metrics.usedMemory > parseInt(userData.thresholdMemory)) {
+          data.flags.memoryFlag = 1;
+          mailOptions.text +=
+            "MEMORY ALERT " +
+            "\nThreshold Memory : " +
+            userData.thresholdMemory +
+            "\n UsedMemory : " +
+            data.metrics.usedMemory +
+            "\n\n";
+          mailFlag = 1;
+        }
+
+        //condition for checking the no of clients alert
+        if (
+          data.metrics.numberOfClient > parseInt(userData.thresholdNoOfClients)
+        ) {
+          data.flags.numberOfClientsFlag = 1;
+          mailOptions.text +=
+            "NO OF CLIENTS ALERT " +
+            "\nThreshold No Of Clients : " +
+            userData.thresholdNoOfClients +
+            "\nNo Of Clients : " +
+            data.metrics.numberOfClient +
+            "\n\n";
+          mailFlag = 1;
+        }
+
+        //condition for checking the hit ratio alert
+        if (data.metrics.hitRatio >= parseFloat(userData.thresholdHitRatio)) {
+          data.flags.hitRatioFlag = 1;
+          mailOptions.text +=
+            "Hit Ratio Alert " +
+            "\nThreshold Hit Ratio : " +
+            userData.thresholdHitRatio +
+            " \nHitratio : " +
+            data.metrics.hitRatio +
+            "\n";
+          mailFlag = 1;
+        }
+
+        if (sendMailFlag === 0 && mailFlag === 1) {
+          mailOptions.text +=
+            "\nPlease configure your redis server.\n\nRegards,\nRDBAlert Team";
+          sendMailFlag = 1;
+          sendMail(mailOptions);
+        }
+
+        //socket for sending the notify data to notification
+        socket.on("get-data-for-notification", function(callback) {
+          getUserData(done => {
+            callback(notifyData, done);
+          });
+        });
+        //socket for sending data to blink notification
+        if (sendMailFlag === 1 && blink === 2) {
+          //console.log(data.flags);
+          socket.emit("get-data-for-blinking-notification", data.flags);
+        }
+        //socket for sending the real time data to dashboard
+        socket.emit("info", data);
+      });
+    });
     //console.log("SENDMAIFLAG : ", sendMailFlag);
     //data format of metric which is going to added in database
-    rclient.info((req, res) => {
-      res.split("\n").map(line => {
-        if (line.match(/used_cpu_sys:\d+\.\d+/i)) {
-          //console.log("Performance Data: " + line.split(":")[1]);
-          data.metrics.performanceData = parseFloat(line.split(":")[1]);
-        }
-        if (line.match(/used_memory:\d/i)) {
-          //console.log('Used memory: ' + line.split(":")[1]);
-          data.metrics.usedMemory = parseInt(line.split(":")[1]);
-        }
-        if (line.match(/connected_clients/i)) {
-          //console.log('Clients: ' + line.split(":")[1]);
-          data.metrics.numberOfClient = parseInt(line.split(":")[1]);
-        }
-        if (line.match(/keyspace_hits:\d/i)) {
-          //console.log('keyspace_hit:'+ line.split(':'[1]))
-          data.metrics.keySpaceHit = parseInt(line.split(":")[1]);
-        }
-        if (line.match(/keyspace_misses:\d/i)) {
-          //console.log('keyspace_misses:'+ line.split(':'[1]))
-          data.metrics.keySpaceMiss = parseInt(line.split(":")[1]);
-        }
-      });
-    });
-
-    data.metrics.hitRatio =
-      data.metrics.keySpaceHit /
-      (data.metrics.keySpaceHit + data.metrics.keySpaceMiss);
-
-    if (isNaN(data.metrics.hitRatio)) {
-      data.metrics.hitRatio = 0;
-    }
-
-    var metrics = {
-      createdAt: moment().format("YYYY/MM/DDTHH:mm:ss"),
-      performanceMetric: data.metrics.performanceData,
-      usedMemoryMetric: data.metrics.usedMemory,
-      noOfClientsMetric: data.metrics.numberOfClient,
-      hitRatio:
-        data.metrics.keySpaceHit /
-        (data.metrics.keySpaceHit + data.metrics.keySpaceMiss)
-    };
-
-    //checking if hitratio is NaN
-    if (isNaN(metrics.hitRatio)) {
-      metrics.hitRatio = 0;
-    }
-
-    //condition for getting the maxperformance data per sec
-    if (metrics.performanceMetric > notifyData.maxPerformanceData) {
-      notifyData.maxPerformanceData = metrics.performanceMetric;
-    }
-
-    //condition for getting the max no of clients data per sec
-    if (metrics.noOfClientsMetric > notifyData.maxUsedMemory) {
-      notifyData.maxNumberOfClient = metrics.noOfClientsMetric;
-    }
-
-    //condition for getting the max used memory data per sec
-    if (metrics.usedMemoryMetric > notifyData.maxUsedMemory) {
-      notifyData.maxUsedMemory = metrics.usedMemoryMetric;
-    }
-
-    //condition for getting the max hitratio data per sec
-    if (metrics.hitRatio > notifyData.maxHitRatio) {
-      notifyData.maxHitRatio = metrics.hitRatio;
-    }
-
-    //entering the max data at end of the day
-    if (moment().format("HH:mm:ss") == "00:00:00") {
-      notifyData._id = i;
-      notifyData.createdAt = moment()
-        .add(i, "days")
-        .format("YYYY/MM/DD");
-      i += 1;
-      insertdataintoDateMetricDatabase(notifyData, function(insert) {});
-    }
-
-    //insertng into the metric database
-    insertIntoMetricesDb(metrics, function(insert) {});
-
-    var mailOptions = {
-      from: "rdbalerta@gmail.com",
-      to: userData.email,
-      subject: "REDIS SERVER ALERT",
-      text:
-        "Hi " +
-        userData.name +
-        " ,\n\n\n Your redis server has exceeded the following threshold values :- \n\n"
-    };
-
-    //condition checking for checking the performance of cpu
-    if (
-      data.metrics.performanceData > parseInt(userData.thresholdCpuPerformance)
-    ) {
-      data.flags.performanceFlag = 1;
-      mailOptions.text +=
-        "PERFORMANCE ALERT " +
-        "\n Threshold Performance Data : " +
-        userData.thresholdCpuPerformance +
-        " \nPerformance Data : " +
-        data.metrics.performanceData +
-        "\n\n";
-      mailFlag = 1;
-    }
-    console.log(data.metrics.hitRatio, userData.thresholdHitRatio);
-
-    //condition for checking the used memory by redis
-    if (data.metrics.usedMemory > parseInt(userData.thresholdMemory)) {
-      data.flags.memoryFlag = 1;
-      mailOptions.text +=
-        "MEMORY ALERT " +
-        "\nThreshold Memory : " +
-        userData.thresholdMemory +
-        "\n UsedMemory : " +
-        data.metrics.usedMemory +
-        "\n\n";
-      mailFlag = 1;
-    }
-
-    //condition for checking the no of clients alert
-    if (data.metrics.numberOfClient > parseInt(userData.thresholdNoOfClients)) {
-      data.flags.numberOfClientsFlag = 1;
-      mailOptions.text +=
-        "NO OF CLIENTS ALERT " +
-        "\nThreshold No Of Clients : " +
-        userData.thresholdNoOfClients +
-        "\nNo Of Clients : " +
-        data.metrics.numberOfClient +
-        "\n\n";
-      mailFlag = 1;
-    }
-
-    //condition for checking the hit ratio alert
-    if (data.metrics.hitRatio >= parseFloat(userData.thresholdHitRatio)) {
-      data.flags.hitRatioFlag = 1;
-      mailOptions.text +=
-        "Hit Ratio Alert " +
-        "\nThreshold Hit Ratio : " +
-        userData.thresholdHitRatio +
-        " \nHitratio : " +
-        data.metrics.hitRatio +
-        "\n";
-      mailFlag = 1;
-    }
-
-    if (sendMailFlag === 0 && mailFlag === 1) {
-      mailOptions.text +=
-        "\nPlease configure your redis server.\n\nRegards,\nRDBAlert Team";
-      sendMailFlag = 1;
-      sendMail(mailOptions);
-    }
-
-    //socket for sending the notify data to notification
-    socket.on("get-data-for-notification", function(callback) {
-      getUserData(done => {
-        callback(notifyData, done);
-      });
-    });
-    //socket for sending data to blink notification
-    if (sendMailFlag === 1 && blink === 2) {
-      //console.log(data.flags);
-      socket.emit("get-data-for-blinking-notification", data.flags);
-    }
-    //socket for sending the real time data to dashboard
-    socket.emit("info", data);
   }, 2000);
 }
 
