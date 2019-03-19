@@ -3,6 +3,7 @@ import Client from "./Client";
 import "../Chart.css";
 import { socket } from "../../index";
 import DetailChartModal from "../DetailChartModal/DetailChartModal";
+const moment = require("moment");
 
 class ClientChart extends Component {
   constructor(props) {
@@ -60,6 +61,9 @@ class ClientChart extends Component {
   componentDidMount() {
     socket.on("info", data => {
       this.change(data.metrics.numberOfClient, data.metrics);
+      if(moment().format("HH:mm:ss") === "00:00:00") {
+        this.state.values.splice(0,this.state.values.length);
+      }
       this.state.values.push(data.metrics.numberOfClient);
       const oldDataSet = this.state.lineChartData.datasets[0];
       const newDataSet = { ...oldDataSet };

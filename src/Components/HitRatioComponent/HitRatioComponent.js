@@ -3,6 +3,7 @@ import HitRatio from "./HitRatio";
 import "../Chart.css";
 import { socket } from "../../index";
 import DetailChartModal from "../DetailChartModal/DetailChartModal";
+const moment = require("moment");
 
 class HitRatioChart extends Component {
   constructor(props) {
@@ -63,6 +64,9 @@ class HitRatioChart extends Component {
         hitRatio = 0;
       }
       this.change(hitRatio);
+      if(moment().format("HH:mm:ss") === "00:00:00") {
+        this.state.values.splice(0,this.state.values.length);
+      }
       this.state.values.push(hitRatio);
       this.setState({ percentage: this.state.memory });
       const oldDataSet = this.state.lineChartData.datasets[0];
