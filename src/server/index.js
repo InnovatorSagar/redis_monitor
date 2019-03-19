@@ -241,8 +241,8 @@ var transporter = nodemailer.createTransport({
   port: 587,
   pool: true,
   auth: {
-    user: "aloowalia22@gmail.com",
-    pass: "asdfg@123"
+    user: "rdbalerta@gmail.com",
+    pass: "Rdbalert@1"
   }
 });
 
