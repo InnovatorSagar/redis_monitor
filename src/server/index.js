@@ -10,6 +10,7 @@ const nodemailer = require("nodemailer");
 const moment = require("moment");
 var sendMailFlag = 0; //variable used for sending the mail only once
 let blink = 1;
+var mailFlag = 0;
 let infoInterval = null;
 let u = { port: null, host: null, password: null };
 let rclient = null;
@@ -46,8 +47,6 @@ class Record {
 
 //socket On when user connected to localhost 4000
 io.sockets.on("connection", function(socket) {
-  socket.setMaxListeners(0);
-
   socket.on("data-for-day-graph", function(fn) {
     mongoClient.connect(url, { useNewUrlParser: true }, function(
       err,
@@ -64,6 +63,7 @@ io.sockets.on("connection", function(socket) {
         });
     });
   });
+  socket.setMaxListeners(0);
 
   //socket for saving the threshold values of the user config settings to mongodb
   socket.on("user-config", function(userConfig, callback) {
@@ -75,7 +75,7 @@ io.sockets.on("connection", function(socket) {
 
     client.on("error", function(err, res) {
       if (err) {
-        // console.log(err);
+        console.log(err);
         callback(false);
         client.end(false);
       }
@@ -114,6 +114,7 @@ io.sockets.on("connection", function(socket) {
         data.flags.memoryFlag = 0;
         data.flags.numberOfClientsFlag = 0;
         sendMailFlag = 0;
+        mailFlag = 0;
         // console.log("updated flags to ", data.flags);
         // console.log("Updated user config", res);
         callback(true);
@@ -148,11 +149,11 @@ io.sockets.on("connection", function(socket) {
       if (client.server_info.connected_slaves > 0) {
         let i;
         for (i = 0; i < client.server_info.connected_slaves; i++) {
-          // console.log(
-          //   client["server_info"]["slave" + i.toString()]
-          //     .match(/port=\d+/i)[0]
-          //     .split("=")[1]
-          // );
+          console.log(
+            client["server_info"]["slave" + i.toString()]
+              .match(/port=\d+/i)[0]
+              .split("=")[1]
+          );
           slaves.push({
             id: i + 1,
             port: parseInt(
@@ -249,7 +250,7 @@ function sendMail(mailOptions) {
     } else {
       console.log("Email sent: " + info.response);
       blink = 2;
-      // console.log("Changed blink to ", blink);
+      console.log("Changed blink to ", blink);
     }
   });
 }
@@ -490,21 +491,14 @@ function getinfo(userData, id, port, socket) {
     insertIntoMetricesDb(metrics, function(insert) {});
 
     var mailOptions = {
-      from: "aloowalia22@gmail.com",
-      to: userData.email,
-      subject: "ALERT FROM RDBALERT",
-      text: "Hi " + userData.name + " ,\n\n\n"
-    };
-
-    var mailFlag = 0;
-    var mailOptions = {
-      from: "aloowalia22@gmail.com",
+      from: "rdbalerta@gmail.com",
       to: userData.email,
       subject: "REDIS SERVER ALERT",
-      text: "Hi " + userData.name + " ,\n\n\n "
+      text:
+        "Hi " +
+        userData.name +
+        " ,\n\n\n Your redis server has exceeded the following threshold values :- \n\n"
     };
-
-    var mailFlag = 0;
 
     //condition checking for checking the performance of cpu
     if (
@@ -520,7 +514,7 @@ function getinfo(userData, id, port, socket) {
         "\n\n";
       mailFlag = 1;
     }
-    // console.log(data.metrics.hitRatio,userData.thresholdHitRatio)
+    console.log(data.metrics.hitRatio, userData.thresholdHitRatio);
 
     //condition for checking the used memory by redis
     if (data.metrics.usedMemory > parseInt(userData.thresholdMemory)) {
@@ -562,9 +556,10 @@ function getinfo(userData, id, port, socket) {
     }
 
     if (sendMailFlag === 0 && mailFlag === 1) {
-      mailOptions.text += "\nRegards,\nRDBAlert Team";
-      sendMail(mailOptions);
+      mailOptions.text +=
+        "\nPlease configure your redis server.\n\nRegards,\nRDBAlert Team";
       sendMailFlag = 1;
+      sendMail(mailOptions);
     }
 
     //socket for sending the notify data to notification
