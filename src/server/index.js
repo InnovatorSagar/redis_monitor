@@ -32,10 +32,10 @@ var data = {
 };
 app.use(express.static(path.join(__dirname, "../../build")));
 
-var dire = __dirname.split("/");
+// var dire = __dirname.split("/");
 //testing the server on index.html
 app.get("*", function(req, res) {
-  res.sendFile("/app/public/index.html");
+  res.sendFile(path.resolve(__dirname, "..", "..", "build", "index.html"));
 });
 app.get("/home", function(req, res) {
   res.sendFile(__dirname + "index.html");
