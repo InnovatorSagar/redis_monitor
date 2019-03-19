@@ -5,7 +5,7 @@ import am4themes_animated from "@amcharts/amcharts4/themes/animated";
 
 am4core.useTheme(am4themes_animated);
 
-class MemoryNew extends Component {
+class DetailChart extends Component {
   constructor(props) {
       super(props);
       this.state = {
@@ -21,7 +21,7 @@ class MemoryNew extends Component {
     let len = this.state.values.length;
     for (let i = 1; i < len; i++) {
     let ndate = new Date(fdates);
-    ndate.setSeconds(ndate.getSeconds() + i+2);
+    ndate.setSeconds(ndate.getSeconds() + i);
     dataforchart.push({ date: ndate, value: this.state.values[i] });
     }
 
@@ -43,7 +43,7 @@ class MemoryNew extends Component {
     series.dataFields.valueY = "value";
 
     series.tooltipText = "{valueY.value}";
-     series.fillOpacity = 0.5;
+     series.fillOpacity = 0.3;
     chart.cursor = new am4charts.XYCursor();
 
     let scrollbarX = new am4charts.XYChartScrollbar();
@@ -66,4 +66,4 @@ class MemoryNew extends Component {
   }
 }
 
-export default MemoryNew;
+export default DetailChart;

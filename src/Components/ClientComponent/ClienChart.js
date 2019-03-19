@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Client from "./Client";
 import "../Chart.css";
 import { socket } from "../../index";
-import MemoryNew from "../MemoryMatrixNew/MemoryNew";
+import DetailChart from "../DetailedChart/DetailedChart";
 
 
 class ClientChart extends Component {
@@ -92,7 +92,7 @@ class ClientChart extends Component {
           height={this.state.height}
         />
         <button onClick={this.handleClick}>Press</button>
-        {this.state.redirect && <MemoryNew values={this.state.val} />}
+        {this.state.redirect && <DetailChart values={this.state.val} />}
         <button onClick={this.handleClose}>Close</button> 
       </div>
     );
