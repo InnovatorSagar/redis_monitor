@@ -21,7 +21,8 @@ var data = {
     maximumMemory: 0,
     usedMemory: 0,
     keySpaceHit: 0,
-    keySpaceMiss: 0
+    keySpaceMiss: 0,
+    hitRatio:0
   },
   flags: {
     performanceFlag: 0,
@@ -420,6 +421,12 @@ function getinfo(userData, id, port, socket) {
       });
     });
 
+    data.metrics.hitRatio=data.metrics.keySpaceHit /(data.metrics.keySpaceHit + data.metrics.keySpaceMiss)
+
+    if(isNaN(data.metrics.hitRatio)){
+      data.metrics.hitRatio=0;
+    }
+
     var metrics = {
       createdAt: moment().format("YYYY/MM/DD"),
       performanceMetric: data.metrics.performanceData,
@@ -452,7 +459,7 @@ function getinfo(userData, id, port, socket) {
 
     //condition for getting the max hitratio data per sec
     if (metrics.hitRatio > notifyData.maxHitRatio) {
-      notifyData.maxHitRatio = metrics.performanceMetric;
+      notifyData.maxHitRatio = metrics.hitRatio;
     }
 
     //entering the max data at end of the day
@@ -495,8 +502,7 @@ function getinfo(userData, id, port, socket) {
         +" \nPerformance Data : "+data.metrics.performanceData+"\n\n"
       mailFlag=1;
     }
-
-    //console.log(data.metrics.performanceData,userData.thresholdCpuPerformance)
+    console.log(data.metrics.hitRatio,userData.thresholdHitRatio)
 
     //condition for checking the used memory by redis
     if (
@@ -519,15 +525,7 @@ function getinfo(userData, id, port, socket) {
     }
 
     //condition for checking the hit ratio alert
-    if (
-      (
-        data.metrics.keySpaceHit /
-          (data.metrics.keySpaceHit + data.metrics.keySpaceMiss) >=
-          1) ||
-      (data.metrics.keySpaceHit > 0 &&
-        data.metrics.keySpaceHit /
-          (data.metrics.keySpaceHit + data.metrics.keySpaceMiss) <
-          parseInt(userData.thresholdHitRatio))) {
+    if (data.metrics.hitRatio>=parseFloat(userData.thresholdHitRatio)) {
       data.flags.hitRatioFlag = 1;
       mailOptions.text+="Hit Ratio Alert "+"\nThreshold Hit Ratio : "+userData.thresholdHitRatio
         +" \nHitratio : "+data.metrics.hitRatio+"\n"

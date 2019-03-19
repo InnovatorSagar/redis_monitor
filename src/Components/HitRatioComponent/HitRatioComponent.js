@@ -58,9 +58,7 @@ class HitRatioChart extends Component {
  
   componentDidMount() {
     socket.on("info", data => {
-      let hitRatio =
-        data.metrics.keySpaceHit /
-        (data.metrics.keySpaceHit + data.metrics.keySpaceMiss);
+      let hitRatio = data.metrics.hitRatio;
       if (isNaN(hitRatio)) {
         hitRatio = 0;
       }

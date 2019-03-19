@@ -27,6 +27,7 @@ class NotificationComponent extends Component {
         data.d
       } i.e., ${percentage}% of your provided value: ${data.u}.`;
     } else {
+      console.log("data",data.d, data.u);
       percentage = parseInt((data.d / data.u) * 100);
       message = `Hit-Ratio on your redis has reached ${
         data.d

@@ -17,12 +17,12 @@ class DetailChart extends Component {
     let chart = am4core.create("chartdiv", am4charts.XYChart);
     chart.paddingRight = 20;
     let dataforchart = [];
-    let fdates = new Date();
+    let fdates = new Date(2018,11,24,0,0,0,0);
     let len = this.state.values.length;
     console.log("length of array", len);
     for (let i = 1; i < len; i++) {
     let ndate = new Date(fdates);
-    ndate.setSeconds(ndate.getSeconds() + i);
+    ndate.setSeconds(i);
     dataforchart.push({ date: ndate, value: this.state.values[i] });
     }
 
