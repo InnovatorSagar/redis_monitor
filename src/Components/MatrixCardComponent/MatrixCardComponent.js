@@ -46,7 +46,7 @@ class MatrixCardComponent extends Component {
         u = u.thresholdCpuPerformance;
       } else if (this.props.heading === "Memory Matrix") {
         d = d.maxUsedMemory;
-        u = u.thersholdMemory;
+        u = u.thresholdMemory;
       } else if (this.props.heading === "Number Of Clients Matrix") {
         d = d.maxNumberOfClient;
         u = u.thresholdNoOfClients;

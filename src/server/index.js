@@ -362,6 +362,9 @@ function insertdataintoDateMetricDatabase(notifyData, callback) {
 
 //function to get the info of the redis database
 function getinfo(userData, id, port, socket) {
+
+  if(infoInterval !== null)
+     clearInterval(infoInterval);
   //console.log(userData);
   if (rclient === null) {
     rclient = redis.createClient({
@@ -493,7 +496,7 @@ function getinfo(userData, id, port, socket) {
       mailFlag=1;
     }
 
-    //console.log(data.metrics.usedMemory,userData.thresholdMemory)
+    //console.log(data.metrics.performanceData,userData.thresholdCpuPerformance)
 
     //condition for checking the used memory by redis
     if (
@@ -543,9 +546,9 @@ function getinfo(userData, id, port, socket) {
         callback(notifyData, done);
       });
     });
-
     //socket for sending data to blink notification
     if (sendMailFlag === 1 && blink === 2) {
+      //console.log(data.flags);
       socket.emit("get-data-for-blinking-notification", data.flags);
     }
     //socket for sending the real time data to dashboard
