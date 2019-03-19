@@ -3,6 +3,7 @@ import Performance from "./Performance";
 import { connect } from "react-redux";
 import { fetchNewData, set } from "../../actions/dataActions";
 import { socket } from "../../index";
+import LoadComponent from "../LoadComponent/LoadComponent";
 
 class ChangeValue extends Component {
   componentDidMount() {
@@ -30,16 +31,19 @@ class ChangeValue extends Component {
   }
 
   render() {
-    return (
-      <div className="chart_size">
-        CPU Performance: {this.props.performanceData}
-        <Performance
-          data={this.props.lineChartData}
-          options={this.props.lineChartOptions}
-          height={this.props.height}
-        />
-      </div>
-    );
+    // if (this.props.performanceData === null)
+    return <LoadComponent />;
+    // else
+    //   return (
+    //     <div className="chart_size">
+    //       CPU Performance: {this.props.performanceData}
+    //       <Performance
+    //         data={this.props.lineChartData}
+    //         options={this.props.lineChartOptions}
+    //         height={this.props.height}
+    //       />
+    //     </div>
+    //   );
   }
 }
 

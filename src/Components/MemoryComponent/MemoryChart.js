@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Memory from "./Memory";
 import "../Chart.css";
 import { socket } from "../../index";
+import LoadComponent from "../LoadComponent/LoadComponent";
 
 class MemoryChart extends Component {
   constructor(props) {
@@ -25,23 +26,21 @@ class MemoryChart extends Component {
         maintainAspectRatio: false,
         scales: {
           xAxes: [
-             {
-              gridLines: {
-               },
-               ticks: {
-                 stepSize: 60,
-                 autoSkip: true,
-                 maxTicksLimit: 10,
-               }
+            {
+              gridLines: {},
+              ticks: {
+                stepSize: 60,
+                autoSkip: true,
+                maxTicksLimit: 10
+              }
             }
           ],
           yAxes: [
             {
-              gridLines: {
-               },
+              gridLines: {},
               ticks: {
                 beginAtZero: true,
-                min: 0,
+                min: 0
               }
             }
           ]
@@ -53,7 +52,7 @@ class MemoryChart extends Component {
   }
   change(d) {
     this.setState(prevState => ({
-      memory: (d / (1024 * 1024) / 15.5) * 100
+      memory: d
     }));
   }
 
@@ -69,25 +68,29 @@ class MemoryChart extends Component {
       const newChartData = {
         ...this.state.lineChartData,
         datasets: [newDataSet],
-        labels: this.state.lineChartData.labels.concat(new Date().toLocaleTimeString()) 
-      }
+        labels: this.state.lineChartData.labels.concat(
+          new Date().toLocaleTimeString()
+        )
+      };
       if (newChartData.labels.length % 8 === 0) {
-         newChartData.labels.shift();
-       }
+        newChartData.labels.shift();
+      }
       this.setState({ lineChartData: newChartData });
     });
   }
   render() {
-    return (
-      <div className="chart_size">
-        memory: {this.state.memory}
-        <Memory
-          data={this.state.lineChartData}
-          options={this.state.lineChartOptions}
-          height={this.state.height}
-        />
-      </div>
-    );
+    if (this.state.memory === null) return <LoadComponent />;
+    else
+      return (
+        <div className="chart_size">
+          memory: {this.state.memory}
+          <Memory
+            data={this.state.lineChartData}
+            options={this.state.lineChartOptions}
+            height={this.state.height}
+          />
+        </div>
+      );
   }
 }
 

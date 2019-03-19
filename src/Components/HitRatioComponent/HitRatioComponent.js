@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import HitRatio from "./HitRatio";
 import "../Chart.css";
 import { socket } from "../../index";
+import LoadComponent from "../LoadComponent/LoadComponent";
 
 class HitRatioChart extends Component {
   constructor(props) {
@@ -75,6 +76,7 @@ class HitRatioChart extends Component {
   }
 
   render() {
+    if (this.state.memory === null) return <LoadComponent />;
     return (
       <div className="chart_size">
         Hit-Ratio: {this.state.memory}

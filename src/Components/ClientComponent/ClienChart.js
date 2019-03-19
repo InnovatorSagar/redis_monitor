@@ -2,12 +2,12 @@ import React, { Component } from "react";
 import Client from "./Client";
 import "../Chart.css";
 import { socket } from "../../index";
-
+import LoadComponent from "../LoadComponent/LoadComponent";
 
 class ClientChart extends Component {
   constructor(props) {
     super(props);
-    
+
     this.state = {
       lineChartData: {
         labels: [],
@@ -34,24 +34,24 @@ class ClientChart extends Component {
               }
             }
           ]
-        },
-      // pan: {
-      //   enabled: true,
-      //   mode: 'xy'
-      // },
-      // zoom:{
-      //   enabled: true,
-      //   mode: 'xy'
-      // }
-    },
-    height: 160,
-    memory: null
-  };
-}
+        }
+        // pan: {
+        //   enabled: true,
+        //   mode: 'xy'
+        // },
+        // zoom:{
+        //   enabled: true,
+        //   mode: 'xy'
+        // }
+      },
+      height: 160,
+      memory: null
+    };
+  }
   change(d, u) {
     this.setState(prevState => ({
       max: u,
-      memory: d,
+      memory: d
     }));
   }
   componentDidMount() {
@@ -78,17 +78,19 @@ class ClientChart extends Component {
   }
 
   render() {
-    return (
-      <div className="chart_size">
-        Number of Clients: {this.state.memory}
-        <Client
-          data={this.state.lineChartData}
-          options={this.state.lineChartOptions}
-          height={this.state.height}
-          //zoom={this.state.zoom}
-        />
-      </div>
-    );
+    if (this.state.memory === null) return <LoadComponent />;
+    else
+      return (
+        <div className="chart_size">
+          Number of Clients: {this.state.memory}
+          <Client
+            data={this.state.lineChartData}
+            options={this.state.lineChartOptions}
+            height={this.state.height}
+            //zoom={this.state.zoom}
+          />
+        </div>
+      );
   }
 }
 
