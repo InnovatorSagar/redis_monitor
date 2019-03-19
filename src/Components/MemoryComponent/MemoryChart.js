@@ -70,6 +70,9 @@ class MemoryChart extends Component {
   componentDidMount() {
     socket.on("info", data => {
       this.change(data.metrics.usedMemory);
+      if (moment().format("HH:mm:ss") === "00:00:00") {
+        this.state.values.splice(0, this.state.values.length);
+      }
       this.state.values.push(data.metrics.usedMemory);
       const oldDataSet = this.state.lineChartData.datasets[0];
       const newDataSet = { ...oldDataSet };
