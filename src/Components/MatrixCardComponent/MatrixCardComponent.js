@@ -8,6 +8,7 @@ import ClientChart from "../ClientComponent/ClienChart.js";
 import HitRatioChart from "../HitRatioComponent/HitRatioComponent.js";
 import NotificationComponent from "../NotificationComponent/NotificationComponent.js";
 import DescriptionModalComponent from "../DescriptionModal/DescriptionModalComponent.js";
+import MemoryNew from "../MemoryMatrixNew/MemoryNew";
 import { socket } from "../../index";
 
 class MatrixCardComponent extends Component {

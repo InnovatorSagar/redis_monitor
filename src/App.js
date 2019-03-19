@@ -10,6 +10,7 @@ import MemoryChart from "./Components/MemoryComponent/MemoryChart";
 import DashboardComponent from "./Components/DashboardComponent/DashboardComponent";
 import FormComponent from "./Components/FormComonent/FormComponent";
 import FeedComponent from "./Components/FeedComponent/FeedComponent";
+import MemoryNew from "./Components/MemoryMatrixNew/MemoryNew";
 let hashHistory = Router.hashHistory;
 class App extends Component {
   render() {
@@ -24,6 +25,7 @@ class App extends Component {
             <Route exact path="/dashboard" component={DashboardComponent} />
             <Route exact path="/Configure" component={FormComponent} />
             <Route exact path="/feed" component={FeedComponent} />
+            <Route exact path="/Memorymain" component={MemoryNew} />
           </div>
         </Router>
       </Provider>

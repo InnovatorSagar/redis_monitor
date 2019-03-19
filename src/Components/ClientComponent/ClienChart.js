@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Client from "./Client";
 import "../Chart.css";
 import { socket } from "../../index";
+import MemoryNew from "../MemoryMatrixNew/MemoryNew";
 
 
 class ClientChart extends Component {
@@ -9,6 +10,9 @@ class ClientChart extends Component {
     super(props);
     
     this.state = {
+      values: [],
+      val:[],
+      redirect:false,
       lineChartData: {
         labels: [],
         datasets: [
@@ -35,19 +39,19 @@ class ClientChart extends Component {
             }
           ]
         },
-      // pan: {
-      //   enabled: true,
-      //   mode: 'xy'
-      // },
-      // zoom:{
-      //   enabled: true,
-      //   mode: 'xy'
-      // }
     },
     height: 160,
     memory: null
   };
 }
+  handleClick = () =>{
+    const val = [...this.state.values];
+    this.setState({ val: val});
+    this.setState({ redirect: true});
+  }
+  handleClose = () =>{
+    this.setState({ redirect: false});
+  }
   change(d, u) {
     this.setState(prevState => ({
       max: u,
@@ -57,6 +61,7 @@ class ClientChart extends Component {
   componentDidMount() {
     socket.on("info", data => {
       this.change(data.metrics.numberOfClient, data.metrics);
+      this.state.values.push(data.metrics.numberOfClient);
       const oldDataSet = this.state.lineChartData.datasets[0];
       const newDataSet = { ...oldDataSet };
       newDataSet.data.push(this.state.memory);
@@ -85,8 +90,10 @@ class ClientChart extends Component {
           data={this.state.lineChartData}
           options={this.state.lineChartOptions}
           height={this.state.height}
-          //zoom={this.state.zoom}
         />
+        <button onClick={this.handleClick}>Press</button>
+        {this.state.redirect && <MemoryNew values={this.state.val} />}
+        <button onClick={this.handleClose}>Close</button> 
       </div>
     );
   }
