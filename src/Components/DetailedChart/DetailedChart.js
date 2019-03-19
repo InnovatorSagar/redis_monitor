@@ -19,6 +19,7 @@ class DetailChart extends Component {
     let dataforchart = [];
     let fdates = new Date();
     let len = this.state.values.length;
+    console.log("length of array", len);
     for (let i = 1; i < len; i++) {
     let ndate = new Date(fdates);
     ndate.setSeconds(ndate.getSeconds() + i);
@@ -60,6 +61,7 @@ class DetailChart extends Component {
   }
 
   render() {
+    console.log(this.state);
     return (
       <div id="chartdiv" style={{ width: "100%", height: "500px" }}></div>
     );

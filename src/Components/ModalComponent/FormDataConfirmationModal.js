@@ -17,15 +17,7 @@ class FormDataConfirmationModal extends Component {
   onClick() {
     this.props.closeModal();
   }
-
-  componentWillReceiveProps(newProps) {
-    if (newProps.variableInProps === this.props.variableInProps) {
-      this.setState({
-        visible: newProps.visiblity
-      });
-    }
-  }
-
+  
   openModal() {
     this.setState({ visible: true });
   }

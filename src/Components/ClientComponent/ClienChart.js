@@ -2,17 +2,15 @@ import React, { Component } from "react";
 import Client from "./Client";
 import "../Chart.css";
 import { socket } from "../../index";
-import DetailChart from "../DetailedChart/DetailedChart";
-
+import DetailChartModal from "../DetailChartModal/DetailChartModal";
 
 class ClientChart extends Component {
   constructor(props) {
     super(props);
-    
     this.state = {
       values: [],
-      val:[],
-      redirect:false,
+      val: [],
+      redirect: false,
       lineChartData: {
         labels: [],
         datasets: [
@@ -39,24 +37,25 @@ class ClientChart extends Component {
             }
           ]
         },
+      
     },
     height: 160,
     memory: null
   };
 }
-  handleClick = () =>{
-    const val = [...this.state.values];
-    this.setState({ val: val});
-    this.setState({ redirect: true});
-  }
-  handleClose = () =>{
-    this.setState({ redirect: false});
-  }
   change(d, u) {
     this.setState(prevState => ({
       max: u,
       memory: d,
     }));
+  }
+  detailGraphModal = () => {
+    const val = [...this.state.values];
+    this.setState({ val: val });
+    this.setState({ redirect: true });
+  }
+  closeModal = () => {
+    this.setState({ redirect: false });
   }
   componentDidMount() {
     socket.on("info", data => {
@@ -84,16 +83,16 @@ class ClientChart extends Component {
 
   render() {
     return (
-      <div className="chart_size">
+      <div>
+        <div className="chart_size" onClick={this.detailGraphModal}>
         Number of Clients: {this.state.memory}
         <Client
           data={this.state.lineChartData}
           options={this.state.lineChartOptions}
           height={this.state.height}
         />
-        <button onClick={this.handleClick}>Press</button>
-        {this.state.redirect && <DetailChart values={this.state.val} />}
-        <button onClick={this.handleClose}>Close</button> 
+        </div>
+        {this.state.redirect && <DetailChartModal values={this.state.val} visible={this.state.redirect} closeModal={this.closeModal}/>}
       </div>
     );
   }

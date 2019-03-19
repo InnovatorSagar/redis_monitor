@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-//import html2canvas from 'html2canvas';
 import "./DashboardComponent.css";
 import MatrixCardComponent from "../MatrixCardComponent/MatrixCardComponent";
 import HeaderComponent from "../HeaderComponent/HeaderComponent";
