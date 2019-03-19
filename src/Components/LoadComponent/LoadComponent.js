@@ -2,7 +2,7 @@ import React from "react";
 import { css } from "@emotion/core";
 // First way to import
 import { PulseLoader } from "react-spinners";
-// Another way to import
+import "./LoadComponent.css";
 
 const override = css`
   display: block;
@@ -14,7 +14,8 @@ class LoadComponent extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: true
+      loading: true,
+      text: this.props.text
     };
   }
   render() {
@@ -23,10 +24,11 @@ class LoadComponent extends React.Component {
         <PulseLoader
           css={override}
           sizeUnit={"px"}
-          size={30}
+          size={20}
           color={"grey"}
           loading={this.state.loading}
         />
+        {this.state.text && <h3>Just give us few moments...</h3>}
       </div>
     );
   }

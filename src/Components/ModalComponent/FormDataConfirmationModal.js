@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import Modal from "react-awesome-modal";
 import { Link } from "react-router-dom";
 import "./ModalComponent.css";
-import FeedComponent from "../FeedComponent/FeedComponent";
 
 class FormDataConfirmationModal extends Component {
   constructor(props) {
@@ -16,14 +15,6 @@ class FormDataConfirmationModal extends Component {
 
   onClick() {
     this.props.closeModal();
-  }
-
-  componentWillReceiveProps(newProps) {
-    if (newProps.variableInProps === this.props.variableInProps) {
-      this.setState({
-        visible: newProps.visiblity
-      });
-    }
   }
 
   openModal() {

@@ -2,12 +2,16 @@ import React, { Component } from "react";
 import Memory from "./Memory";
 import "../Chart.css";
 import { socket } from "../../index";
+import DetailChartModal from "../DetailChartModal/DetailChartModal";
 import LoadComponent from "../LoadComponent/LoadComponent";
 
 class MemoryChart extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      values: [],
+      val: [],
+      redirect: false,
       lineChartData: {
         labels: [],
         datasets: [
@@ -55,10 +59,18 @@ class MemoryChart extends Component {
       memory: d
     }));
   }
-
+  detailGraphModal = () => {
+    const val = [...this.state.values];
+    this.setState({ val: val });
+    this.setState({ redirect: true });
+  };
+  closeModal = () => {
+    this.setState({ redirect: false });
+  };
   componentDidMount() {
     socket.on("info", data => {
       this.change(data.metrics.usedMemory);
+      this.state.values.push(data.metrics.usedMemory);
       const oldDataSet = this.state.lineChartData.datasets[0];
       const newDataSet = { ...oldDataSet };
       newDataSet.data.push(this.state.memory);
@@ -80,17 +92,25 @@ class MemoryChart extends Component {
   }
   render() {
     if (this.state.memory === null) return <LoadComponent />;
-    else
-      return (
-        <div className="chart_size">
-          memory: {this.state.memory}
+    return (
+      <div>
+        <div className="chart_size" onClick={this.detailGraphModal}>
+          Memory: {this.state.memory} KB
           <Memory
             data={this.state.lineChartData}
             options={this.state.lineChartOptions}
             height={this.state.height}
           />
         </div>
-      );
+        {this.state.redirect && (
+          <DetailChartModal
+            heading="Memory Matrix"
+            visible={this.state.redirect}
+            closeModal={this.closeModal}
+          />
+        )}
+      </div>
+    );
   }
 }
 

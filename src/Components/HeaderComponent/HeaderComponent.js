@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import "./Header.css";
 import { Redirect, Link } from "react-router-dom";
-import { socket } from "../..";
 const rdbAlertLogo = require("../../assets/logo_2.png");
 const user = require("../../assets/user.png");
 const home = require("../../assets/home.png");
@@ -28,7 +27,7 @@ class HeaderComponent extends Component {
     this.setState({ home: true });
   }
   feedClick() {
-    this.setState({ feed: true});
+    this.setState({ feed: true });
   }
 
   render() {
@@ -48,13 +47,17 @@ class HeaderComponent extends Component {
                 <img src={feed} alt="feed" />
                 <p>Feed</p>
               </button>
-              <button type="submit" className="user-btn" onClick={this.userClick}>
+              <button
+                type="submit"
+                className="user-btn"
+                onClick={this.userClick}
+              >
                 <img src={user} alt="user" />
                 <p>User Settings</p>
               </button>
             </section>
           )}
-          {this.props.heading === "Feed" &&  (
+          {this.props.heading === "Feed" && (
             <button type="submit" className="user-btn" onClick={this.userClick}>
               <img src={user} alt="user" />
               <p>User Settings</p>

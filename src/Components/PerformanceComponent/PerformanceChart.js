@@ -1,11 +1,12 @@
 import React, { Component } from "react";
-import Client from "./Client";
+import Performance from "./Performance";
 import "../Chart.css";
 import { socket } from "../../index";
-import LoadComponent from "../LoadComponent/LoadComponent";
 import DetailChartModal from "../DetailChartModal/DetailChartModal";
+import LoadComponent from "../LoadComponent/LoadComponent";
+const moment = require("moment");
 
-class ClientChart extends Component {
+class PerformanceComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -17,7 +18,7 @@ class ClientChart extends Component {
         datasets: [
           {
             type: "line",
-            label: "Number of Clients of System",
+            label: "Performance of System",
             borderColor: "orange",
             borderWidth: "2",
             lineTension: 0.45,
@@ -43,9 +44,8 @@ class ClientChart extends Component {
       memory: null
     };
   }
-  change(d, u) {
+  change(d) {
     this.setState(prevState => ({
-      max: u,
       memory: d
     }));
   }
@@ -57,10 +57,15 @@ class ClientChart extends Component {
   closeModal = () => {
     this.setState({ redirect: false });
   };
+
   componentDidMount() {
     socket.on("info", data => {
-      this.change(data.metrics.numberOfClient, data.metrics);
-      this.state.values.push(data.metrics.numberOfClient);
+      this.change(data.metrics.performanceData);
+      if (moment().format("HH:mm:ss") === "00:00:00") {
+        this.state.values.splice(0, this.state.values.length);
+      }
+      this.state.values.push(data.metrics.performanceData);
+      this.setState({ percentage: this.state.memory });
       const oldDataSet = this.state.lineChartData.datasets[0];
       const newDataSet = { ...oldDataSet };
       newDataSet.data.push(this.state.memory);
@@ -86,8 +91,8 @@ class ClientChart extends Component {
     return (
       <div>
         <div className="chart_size" onClick={this.detailGraphModal}>
-          Number of Clients: {this.state.memory}
-          <Client
+          Performance: {this.state.memory}
+          <Performance
             data={this.state.lineChartData}
             options={this.state.lineChartOptions}
             height={this.state.height}
@@ -95,7 +100,7 @@ class ClientChart extends Component {
         </div>
         {this.state.redirect && (
           <DetailChartModal
-            heading="Number Of Clients"
+            heading="Performance Matrix"
             visible={this.state.redirect}
             closeModal={this.closeModal}
           />
@@ -105,4 +110,4 @@ class ClientChart extends Component {
   }
 }
 
-export default ClientChart;
+export default PerformanceComponent;

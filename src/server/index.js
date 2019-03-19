@@ -10,6 +10,7 @@ const nodemailer = require("nodemailer");
 const moment = require("moment");
 var sendMailFlag = 0; //variable used for sending the mail only once
 let blink = 1;
+var mailFlag = 0;
 let infoInterval = null;
 let u = { port: null, host: null, password: null };
 let rclient = null;
@@ -21,7 +22,8 @@ var data = {
     maximumMemory: 0,
     usedMemory: 0,
     keySpaceHit: 0,
-    keySpaceMiss: 0
+    keySpaceMiss: 0,
+    hitRatio: 0
   },
   flags: {
     performanceFlag: 0,
@@ -49,6 +51,22 @@ class Record {
 
 //socket On when user connected to localhost 4000
 io.sockets.on("connection", function(socket) {
+  socket.on("data-for-day-graph", function(fn) {
+    mongoClient.connect(url, { useNewUrlParser: true }, function(
+      err,
+      metrices
+    ) {
+      if (err) throw err;
+      var RDBAlert = metrices.db("rdbalert");
+      RDBAlert.collection("redismetric")
+        .find()
+        .toArray()
+        .then(res => {
+          console.log(res);
+          fn(res);
+        });
+    });
+  });
   socket.setMaxListeners(0);
 
   //socket for saving the threshold values of the user config settings to mongodb
@@ -100,6 +118,7 @@ io.sockets.on("connection", function(socket) {
         data.flags.memoryFlag = 0;
         data.flags.numberOfClientsFlag = 0;
         sendMailFlag = 0;
+        mailFlag = 0;
         // console.log("updated flags to ", data.flags);
         // console.log("Updated user config", res);
         callback(true);
@@ -419,8 +438,16 @@ function getinfo(userData, id, port, socket) {
       });
     });
 
+    data.metrics.hitRatio =
+      data.metrics.keySpaceHit /
+      (data.metrics.keySpaceHit + data.metrics.keySpaceMiss);
+
+    if (isNaN(data.metrics.hitRatio)) {
+      data.metrics.hitRatio = 0;
+    }
+
     var metrics = {
-      createdAt: moment().format("YYYY/MM/DD"),
+      createdAt: moment().format("YYYY/MM/DDTHH:mm:ss"),
       performanceMetric: data.metrics.performanceData,
       usedMemoryMetric: data.metrics.usedMemory,
       noOfClientsMetric: data.metrics.numberOfClient,
@@ -451,7 +478,7 @@ function getinfo(userData, id, port, socket) {
 
     //condition for getting the max hitratio data per sec
     if (metrics.hitRatio > notifyData.maxHitRatio) {
-      notifyData.maxHitRatio = metrics.performanceMetric;
+      notifyData.maxHitRatio = metrics.hitRatio;
     }
 
     //entering the max data at end of the day
@@ -468,21 +495,14 @@ function getinfo(userData, id, port, socket) {
     insertIntoMetricesDb(metrics, function(insert) {});
 
     var mailOptions = {
-      from: "aloowalia22@gmail.com",
-      to: userData.email,
-      subject: "ALERT FROM RDBALERT",
-      text: "Hi " + userData.name + " ,\n\n\n"
-    };
-
-    var mailFlag = 0;
-    var mailOptions = {
-      from: "aloowalia22@gmail.com",
+      from: "rdbalerta@gmail.com",
       to: userData.email,
       subject: "REDIS SERVER ALERT",
-      text: "Hi " + userData.name + " ,\n\n\n "
+      text:
+        "Hi " +
+        userData.name +
+        " ,\n\n\n Your redis server has exceeded the following threshold values :- \n\n"
     };
-
-    var mailFlag = 0;
 
     //condition checking for checking the performance of cpu
     if (
@@ -498,8 +518,7 @@ function getinfo(userData, id, port, socket) {
         "\n\n";
       mailFlag = 1;
     }
-
-    //console.log(data.metrics.performanceData,userData.thresholdCpuPerformance)
+    console.log(data.metrics.hitRatio, userData.thresholdHitRatio);
 
     //condition for checking the used memory by redis
     if (data.metrics.usedMemory > parseInt(userData.thresholdMemory)) {
@@ -528,15 +547,7 @@ function getinfo(userData, id, port, socket) {
     }
 
     //condition for checking the hit ratio alert
-    if (
-      data.metrics.keySpaceHit /
-        (data.metrics.keySpaceHit + data.metrics.keySpaceMiss) >=
-        1 ||
-      (data.metrics.keySpaceHit > 0 &&
-        data.metrics.keySpaceHit /
-          (data.metrics.keySpaceHit + data.metrics.keySpaceMiss) <
-          parseInt(userData.thresholdHitRatio))
-    ) {
+    if (data.metrics.hitRatio >= parseFloat(userData.thresholdHitRatio)) {
       data.flags.hitRatioFlag = 1;
       mailOptions.text +=
         "Hit Ratio Alert " +
@@ -549,9 +560,10 @@ function getinfo(userData, id, port, socket) {
     }
 
     if (sendMailFlag === 0 && mailFlag === 1) {
-      mailOptions.text += "\nRegards,\nRDBAlert Team";
-      sendMail(mailOptions);
+      mailOptions.text +=
+        "\nPlease configure your redis server.\n\nRegards,\nRDBAlert Team";
       sendMailFlag = 1;
+      sendMail(mailOptions);
     }
 
     //socket for sending the notify data to notification

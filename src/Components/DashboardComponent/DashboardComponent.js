@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-//import html2canvas from 'html2canvas';
 import "./DashboardComponent.css";
 import MatrixCardComponent from "../MatrixCardComponent/MatrixCardComponent";
 import HeaderComponent from "../HeaderComponent/HeaderComponent";
@@ -28,27 +27,29 @@ class DashboardComponent extends Component {
   componentDidMount() {
     socket.disconnect();
     socket.connect();
-    console.log(this.props.location.state.port);
     socket.emit("startMonitoring", this.state.id, this.state.port);
     socket.on("get-data-for-blinking-notification", data => {
-      console.log("Blinking even", data);
-      if(this.state.prevperformanceFlag !== data.performanceFlag || this.state.prevmemoryFlag !== data.memoryFlag ||
-        this.state.prevnumberOfClientsFlag !== data.numberOfClientsFlag || this.state.prevhitRatioFlag !== data.hitRatioFlag) {
-      this.setState(
-        {
-          performanceFlag: data.performanceFlag,
-          hitRatioFlag: data.hitRatioFlag,
-          numberOfClientsFlag: data.numberOfClientsFlag,
-          memoryFlag: data.memoryFlag,
-          prevperformanceFlag: data.performanceFlag,
-          prevhitRatioFlag: data.hitRatioFlag,
-          prevnumberOfClientsFlag: data.numberOfClientsFlag,
-          prevmemoryFlag: data.memoryFlag
-        },
-        () => {
-          console.log(this.state);
-        }
-      );
+      if (
+        this.state.prevperformanceFlag !== data.performanceFlag ||
+        this.state.prevmemoryFlag !== data.memoryFlag ||
+        this.state.prevnumberOfClientsFlag !== data.numberOfClientsFlag ||
+        this.state.prevhitRatioFlag !== data.hitRatioFlag
+      ) {
+        this.setState(
+          {
+            performanceFlag: data.performanceFlag,
+            hitRatioFlag: data.hitRatioFlag,
+            numberOfClientsFlag: data.numberOfClientsFlag,
+            memoryFlag: data.memoryFlag,
+            prevperformanceFlag: data.performanceFlag,
+            prevhitRatioFlag: data.hitRatioFlag,
+            prevnumberOfClientsFlag: data.numberOfClientsFlag,
+            prevmemoryFlag: data.memoryFlag
+          },
+          () => {
+            console.log(this.state);
+          }
+        );
       }
     });
   }
@@ -56,35 +57,33 @@ class DashboardComponent extends Component {
   render() {
     // if(this.state.performanceFlag) {
     //   this.screenshot(); }
-
-    console.log("After component did mount", this.state);
     return (
       <div>
         <HeaderComponent heading="Dashboard" />
         <div className="app-container">
-        <h1>Welcome To Database Monitoring</h1>
-        <hr />
-        <div className="upper-cards">
-          <MatrixCardComponent
-            heading="Memory Matrix"
-            notify={this.state.memoryFlag}
-          />
-          <MatrixCardComponent
-            heading="Number Of Clients Matrix"
-            notify={this.state.numberOfClientsFlag}
-          />
+          <h1>Welcome To Database Monitoring</h1>
+          <hr />
+          <div className="upper-cards">
+            <MatrixCardComponent
+              heading="Memory Matrix"
+              notify={this.state.memoryFlag}
+            />
+            <MatrixCardComponent
+              heading="Number Of Clients Matrix"
+              notify={this.state.numberOfClientsFlag}
+            />
+          </div>
+          <div className="upper-cards">
+            <MatrixCardComponent
+              heading="Performance Matrix"
+              notify={this.state.performanceFlag}
+            />
+            <MatrixCardComponent
+              heading="Hit-Ratio Matrix"
+              notify={this.state.hitRatioFlag}
+            />
+          </div>
         </div>
-        <div className="upper-cards">
-          <MatrixCardComponent
-            heading="Performance Matrix"
-            notify={this.state.performanceFlag}
-          />
-          <MatrixCardComponent
-            heading="Hit-Ratio Matrix"
-            notify={this.state.hitRatioFlag}
-          />
-        </div>
-      </div>
       </div>
     );
   }

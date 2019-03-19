@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import ChangeValue from "../PerformanceComponent/changeValue.js";
 import "./MatrixCardComponent.css";
 import alert_on from "../../assets/alert_on.png";
 import description from "../../assets/description.png";
@@ -9,6 +8,7 @@ import HitRatioChart from "../HitRatioComponent/HitRatioComponent.js";
 import NotificationComponent from "../NotificationComponent/NotificationComponent.js";
 import DescriptionModalComponent from "../DescriptionModal/DescriptionModalComponent.js";
 import { socket } from "../../index";
+import PerformanceComponent from "../PerformanceComponent/PerformanceChart.js";
 
 class MatrixCardComponent extends Component {
   constructor(props) {
@@ -40,7 +40,7 @@ class MatrixCardComponent extends Component {
   notificationModal() {
     this.setState({ notificationModal: true });
     socket.emit("get-data-for-notification", (d, u) => {
-      console.log("Data ", d);
+      // console.log("Data ", d);
       if (this.props.heading === "Performance Matrix") {
         d = d.maxPerformanceData;
         u = u.thresholdCpuPerformance;
@@ -113,7 +113,7 @@ class MatrixCardComponent extends Component {
         </div>
         <div className="graph">
           {heading === "Performance Matrix" ? (
-            <ChangeValue />
+            <PerformanceComponent />
           ) : heading === "Memory Matrix" ? (
             <MemoryChart />
           ) : heading === "Number Of Clients Matrix" ? (

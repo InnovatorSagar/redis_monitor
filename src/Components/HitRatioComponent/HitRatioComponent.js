@@ -2,12 +2,16 @@ import React, { Component } from "react";
 import HitRatio from "./HitRatio";
 import "../Chart.css";
 import { socket } from "../../index";
+import DetailChartModal from "../DetailChartModal/DetailChartModal";
 import LoadComponent from "../LoadComponent/LoadComponent";
 
 class HitRatioChart extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      values: [],
+      val: [],
+      redirect: false,
       lineChartData: {
         labels: [],
         datasets: [
@@ -44,16 +48,23 @@ class HitRatioChart extends Component {
       memory: d
     }));
   }
+  detailGraphModal = () => {
+    const val = [...this.state.values];
+    this.setState({ val: val });
+    this.setState({ redirect: true });
+  };
+  closeModal = () => {
+    this.setState({ redirect: false });
+  };
 
   componentDidMount() {
     socket.on("info", data => {
-      let hitRatio =
-        data.metrics.keySpaceHit /
-        (data.metrics.keySpaceHit + data.metrics.keySpaceMiss);
+      let hitRatio = data.metrics.hitRatio;
       if (isNaN(hitRatio)) {
         hitRatio = 0;
       }
       this.change(hitRatio);
+      this.state.values.push(hitRatio);
       this.setState({ percentage: this.state.memory });
       const oldDataSet = this.state.lineChartData.datasets[0];
       const newDataSet = { ...oldDataSet };
@@ -78,13 +89,22 @@ class HitRatioChart extends Component {
   render() {
     if (this.state.memory === null) return <LoadComponent />;
     return (
-      <div className="chart_size">
-        Hit-Ratio: {this.state.memory}
-        <HitRatio
-          data={this.state.lineChartData}
-          options={this.state.lineChartOptions}
-          height={this.state.height}
-        />
+      <div>
+        <div className="chart_size" onClick={this.detailGraphModal}>
+          Hit-Ratio: {this.state.memory}
+          <HitRatio
+            data={this.state.lineChartData}
+            options={this.state.lineChartOptions}
+            height={this.state.height}
+          />
+        </div>
+        {this.state.redirect && (
+          <DetailChartModal
+            heading="Hit-Ratio Matrix"
+            visible={this.state.redirect}
+            closeModal={this.closeModal}
+          />
+        )}
       </div>
     );
   }

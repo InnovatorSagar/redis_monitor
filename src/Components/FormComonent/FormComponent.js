@@ -90,16 +90,13 @@ class FormComponent extends Component {
       this.setState({ redirect: true });
       if (this.state.haveData) {
         socket.emit("update-user-config", data, callback => {
-          console.log("Callback recieved is ", callback);
           if (!callback) {
             this.setState(
               {
                 error_wala: true,
                 sentData: false
               },
-              () => {
-                console.log(this.state);
-              }
+              () => {}
             );
           }
           if (callback) {
@@ -108,9 +105,7 @@ class FormComponent extends Component {
                 sentData: true,
                 error_wala: false
               },
-              () => {
-                console.log("Changed state ", this.state);
-              }
+              () => {}
             );
           }
         });
@@ -163,143 +158,143 @@ class FormComponent extends Component {
         )}
         <HeaderComponent heading="Database Configurations" />
         <div className="form-container">
-        <h3>DATABASE CONFIGURATIONS</h3>
-        <hr />
-        <div className="form">
-          <p className="alignPersonalText">Personal Information</p>
-          <form onSubmit={e => this.handleSubmit(e)}>
-            <section>
-              <p className="alignInputText">Name:</p>
-              <input
-                type="text"
-                className="inputfield"
-                name="name"
-                value={this.state.name}
-                onChange={e => this.handleChange(e)}
-                required
-              />
-            </section>
-            <section>
-              <p className="alignInputText">Email:</p>
-              <input
-                type="text"
-                className="inputfield"
-                name="email"
-                value={this.state.email}
-                onChange={e => this.handleChange(e)}
-                required
-              />
-            </section>
-            <section>
-              <p className="alignInputText">Organisation:</p>
-              <input
-                type="text"
-                className="inputfield"
-                name="organization"
-                value={this.state.organization}
-                onChange={e => this.handleChange(e)}
-                required
-              />
-            </section>
-            <p className="alignDatabaseText">Redis-Server Information</p>
-            <section>
-              <p className="alignInputText">Port:</p>
-              <input
-                type="text"
-                className="inputfield"
-                name="port"
-                value={this.state.port}
-                onChange={e => this.handleChange(e)}
-                required
-              />
-            </section>
-            <section>
-              <p className="alignInputText">Password:</p>
-              <input
-                type="password"
-                className="inputfield"
-                name="databasePass"
-                value={this.state.databasePass}
-                onChange={e => this.handleChange(e)}
-                required
-              />
-            </section>
-            <section>
-              <p className="alignInputText">IP Address/ URL:</p>
-              <input
-                type="text"
-                className="inputfield"
-                name="databaseHost"
-                value={this.state.databaseHost}
-                onChange={e => this.handleChange(e)}
-                required
-              />
-            </section>
-            <section>
-              <p className="alignInputText">Memory Threshold:</p>
-              <input
-                type="text"
-                className="inputfield"
-                placeholder="Set Memory Limit(Bytes)"
-                name="thresholdMemory"
-                value={this.state.thresholdMemory}
-                onChange={e => this.handleChange(e)}
-                required
-              />
-            </section>
-            <section>
-              <p className="alignInputText">Number of Clients</p>
-              <input
-                type="text"
-                className="inputfield"
-                placeholder="Set Limit of Clients"
-                name="thresholdNoOfClients"
-                value={this.state.thresholdNoOfClients}
-                onChange={e => this.handleChange(e)}
-                required
-              />
-            </section>
-            <section>
-              <p className="alignInputText">Performance Requirement</p>
-              <input
-                type="text"
-                className="inputfield"
-                placeholder="Enter minimum Performance Required in Percent"
-                name="thresholdCpuPerformance"
-                value={this.state.thresholdCpuPerformance}
-                onChange={e => this.handleChange(e)}
-                required
-              />
-            </section>
-            <section>
-              <p className="alignInputText">Hit Ratio</p>
-              <input
-                type="text"
-                className="inputfield"
-                placeholder="Enter minimum Hit Ratio"
-                name="hitratiometric"
-                value={this.state.hitratiometric}
-                onChange={e => this.handleChange(e)}
-                required
-              />
-            </section>
-            <section>
-              <Link to="/">
-                <button className="cancel-btn" type="secondary">
-                  Cancel
+          <h3>DATABASE CONFIGURATIONS</h3>
+          <hr />
+          <div className="form">
+            <p className="alignPersonalText">Personal Information</p>
+            <form onSubmit={e => this.handleSubmit(e)}>
+              <section>
+                <p className="alignInputText">Name:</p>
+                <input
+                  type="text"
+                  className="inputfield"
+                  name="name"
+                  value={this.state.name}
+                  onChange={e => this.handleChange(e)}
+                  required
+                />
+              </section>
+              <section>
+                <p className="alignInputText">Email:</p>
+                <input
+                  type="text"
+                  className="inputfield"
+                  name="email"
+                  value={this.state.email}
+                  onChange={e => this.handleChange(e)}
+                  required
+                />
+              </section>
+              <section>
+                <p className="alignInputText">Organisation:</p>
+                <input
+                  type="text"
+                  className="inputfield"
+                  name="organization"
+                  value={this.state.organization}
+                  onChange={e => this.handleChange(e)}
+                  required
+                />
+              </section>
+              <p className="alignDatabaseText">Redis-Server Information</p>
+              <section>
+                <p className="alignInputText">Master Port:</p>
+                <input
+                  type="text"
+                  className="inputfield"
+                  name="port"
+                  value={this.state.port}
+                  onChange={e => this.handleChange(e)}
+                  required
+                />
+              </section>
+              <section>
+                <p className="alignInputText">Master Password:</p>
+                <input
+                  type="password"
+                  className="inputfield"
+                  name="databasePass"
+                  value={this.state.databasePass}
+                  onChange={e => this.handleChange(e)}
+                  required
+                />
+              </section>
+              <section>
+                <p className="alignInputText">Master IP Address/ URL:</p>
+                <input
+                  type="text"
+                  className="inputfield"
+                  name="databaseHost"
+                  value={this.state.databaseHost}
+                  onChange={e => this.handleChange(e)}
+                  required
+                />
+              </section>
+              <section>
+                <p className="alignInputText">Memory Threshold:</p>
+                <input
+                  type="text"
+                  className="inputfield"
+                  placeholder="Set Memory Limit(Bytes)"
+                  name="thresholdMemory"
+                  value={this.state.thresholdMemory}
+                  onChange={e => this.handleChange(e)}
+                  required
+                />
+              </section>
+              <section>
+                <p className="alignInputText">Number of Clients</p>
+                <input
+                  type="text"
+                  className="inputfield"
+                  placeholder="Set Limit of Clients"
+                  name="thresholdNoOfClients"
+                  value={this.state.thresholdNoOfClients}
+                  onChange={e => this.handleChange(e)}
+                  required
+                />
+              </section>
+              <section>
+                <p className="alignInputText">Performance Requirement</p>
+                <input
+                  type="text"
+                  className="inputfield"
+                  placeholder="Enter minimum Performance Required in Percent"
+                  name="thresholdCpuPerformance"
+                  value={this.state.thresholdCpuPerformance}
+                  onChange={e => this.handleChange(e)}
+                  required
+                />
+              </section>
+              <section>
+                <p className="alignInputText">Hit Ratio</p>
+                <input
+                  type="text"
+                  className="inputfield"
+                  placeholder="Enter minimum Hit Ratio"
+                  name="hitratiometric"
+                  value={this.state.hitratiometric}
+                  onChange={e => this.handleChange(e)}
+                  required
+                />
+              </section>
+              <section>
+                <Link to="/">
+                  <button className="cancel-btn" type="secondary">
+                    Cancel
+                  </button>
+                </Link>
+                <button
+                  className="submit-btn"
+                  type="submit"
+                  onClick={this.handleSubmit}
+                >
+                  {button} >
                 </button>
-              </Link>
-              <button
-                className="submit-btn"
-                type="submit"
-                onClick={this.handleSubmit}
-              >
-                {button} >
-              </button>
-            </section>
-          </form>
+              </section>
+            </form>
+          </div>
         </div>
-      </div>
       </div>
     );
   }
