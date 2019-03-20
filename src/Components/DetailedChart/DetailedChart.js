@@ -59,6 +59,7 @@ class DetailChart extends Component {
 
     let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
     valueAxis.tooltip.disabled = true;
+    valueAxis.title.text = this.state.heading;
     dateAxis.title.text = "TIME";
     valueAxis.renderer.minWidth = 35;
 
@@ -87,7 +88,12 @@ class DetailChart extends Component {
     // if(this.state.values === null)
     // return <h3>Loading...</h3>;
     // console.log(this.state);
-    return <div id="chartdiv" style={{ width: "100%", height: "500px" }} />;
+    return (
+      <div>
+        <h1>Showing today's data for {this.state.heading}</h1>
+        <div id="chartdiv" style={{ width: "100%", height: "500px" }} />
+      </div>
+    );
   }
 }
 
