@@ -47,6 +47,7 @@ class FormComponent extends Component {
       this.state.databaseHost === "" ||
       this.state.databasePass === ""
     ) {
+      res = false;
       this.setState({ error_wala: true });
     }
     if (emailVar.indexOf("@") === -1) {
