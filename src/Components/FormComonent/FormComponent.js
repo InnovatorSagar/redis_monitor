@@ -138,7 +138,7 @@ class FormComponent extends Component {
   render() {
     let button = "Submit";
     if (this.state.haveData) button = "Update";
-    console.log("Form state ", this.state);
+    // console.log("Form state ", this.state);
     return (
       <div>
         {this.state.sentData && (
