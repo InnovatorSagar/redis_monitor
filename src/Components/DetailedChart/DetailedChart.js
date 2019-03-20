@@ -33,11 +33,11 @@ class DetailChart extends Component {
           hours = parseInt(v.createdAt.substring(11, 13));
           minute = parseInt(v.createdAt.substring(14, 16));
           seconds = parseInt(v.createdAt.substring(17));
-          console.log(hours, minute, seconds, year, month, day);
-          console.log(v);
+          // console.log(hours, minute, seconds, year, month, day);
+          // console.log(v);
           let n = new Date(year, month, day, hours, minute, seconds);
           // n.setSeconds(12);
-          console.log("hero", n, "ami", v.createdAt);
+          // console.log("hero", n, "ami", v.createdAt);
           let data = null;
           if (this.state.heading === "Performance Matrix")
             data = v.performanceMetric;
