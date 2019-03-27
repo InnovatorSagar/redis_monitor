@@ -11,11 +11,11 @@ if (process.env.NODE_ENV === "production") {
   url = `http://localhost:4000`;
 }
 
-console.log(process, process.env);
+//console.log(process, process.env);
 const socket = io.connect(url);
-console.log(url);
+//console.log(url);
 socket.emit("d", c => {
-  console.log(c);
+  //console.log(c);
 });
 ReactDOM.render(<App />, document.getElementById("root"));
 // If you want your app to work offline and load faster, you can change

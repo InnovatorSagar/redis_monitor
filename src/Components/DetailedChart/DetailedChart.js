@@ -15,15 +15,15 @@ class DetailChart extends Component {
   }
 
   componentDidMount() {
-    console.log(this.state.heading);
+    //console.log(this.state.heading);
     let chart = am4core.create("chartdiv", am4charts.XYChart);
     socket.emit("data-for-day-graph", callback => {
       this.setState({ values: callback }, () => {
-        console.log("recieved", this.state.values);
+        //console.log("recieved", this.state.values);
         chart.paddingRight = 20;
         let dataforchart = [];
         let len = this.state.values.length;
-        console.log("length of array", len);
+        //console.log("length of array", len);
 
         let hours, minute, seconds, year, month, day;
         this.state.values.map(v => {

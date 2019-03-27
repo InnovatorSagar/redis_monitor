@@ -47,7 +47,7 @@ class DashboardComponent extends Component {
             prevmemoryFlag: data.memoryFlag
           },
           () => {
-            console.log(this.state);
+            //console.log(this.state);
           }
         );
       }

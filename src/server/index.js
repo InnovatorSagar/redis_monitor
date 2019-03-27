@@ -62,7 +62,7 @@ io.sockets.on("connection", function(socket) {
         .find()
         .toArray()
         .then(res => {
-          console.log(res);
+          //console.log(res);
           fn(res);
         });
     });
@@ -79,7 +79,7 @@ io.sockets.on("connection", function(socket) {
 
     client.on("error", function(err, res) {
       if (err) {
-        console.log(err);
+        //console.log(err);
         callback(false);
         client.end(false);
       }
@@ -153,11 +153,6 @@ io.sockets.on("connection", function(socket) {
       if (client.server_info.connected_slaves > 0) {
         let i;
         for (i = 0; i < client.server_info.connected_slaves; i++) {
-          console.log(
-            client["server_info"]["slave" + i.toString()]
-              .match(/port=\d+/i)[0]
-              .split("=")[1]
-          );
           slaves.push({
             id: i + 1,
             port: parseInt(
@@ -250,9 +245,9 @@ var transporter = nodemailer.createTransport({
 function sendMail(mailOptions) {
   transporter.sendMail(mailOptions, function(error, info) {
     if (error) {
-      console.log(error);
+      // console.log(error);
     } else {
-      console.log("Email sent: " + info.response);
+      // console.log("Email sent: " + info.response);
       blink = 2;
     }
   });
@@ -612,5 +607,5 @@ function getDataBetweenTwoDates(startDate, endDate, callback) {
 }
 const port = process.env.PORT || "4000";
 server.listen(port, () => {
-  console.log("Listening to port", port);
+  // console.log("Listening to port", port);
 });

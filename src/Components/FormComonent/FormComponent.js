@@ -27,7 +27,7 @@ class FormComponent extends Component {
   }
 
   closeModal = () => {
-    console.log("Closing modal");
+    //console.log("Closing modal");
     this.setState({ redirect: false });
   };
 
