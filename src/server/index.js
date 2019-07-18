@@ -185,7 +185,7 @@ io.sockets.on("connection", function(socket) {
 
   //socket for starting the monitoring on the dashboard
   socket.on("startMonitoring", (id, port) => {
-    getUserData(function(thresholdValues) {
+    getUserData( thresholdValues => {
       //console.log("ID AND PORT THST CSMR IS : ", port, id);
       getinfo(thresholdValues, id, port, socket);
     });
